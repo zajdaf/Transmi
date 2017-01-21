@@ -26,7 +26,6 @@ var Router = (function () { 'use strict';
         }
 
         window.onhashchange = this.updateRouteFromLocationHash.bind(this)
-        this.updateRouteFromLocationHash()
     }
 
     Router.prototype.updateRouteFromLocationHash = function () {
@@ -45,7 +44,6 @@ var Router = (function () { 'use strict';
 
         for (var i = 0; i < this.routes.length; i++) {
             var matches = location.match(this.routes[i].regexp)
-            console.log(matches, this.routes[i])
             if (matches) {
                 return this.updateComponent(this.routes[i], matches)
             }
@@ -99,5 +97,5 @@ var Router = (function () { 'use strict';
         return false
     }
 
-    return Router;
+    return Router
 }());

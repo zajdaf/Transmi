@@ -16,7 +16,6 @@
 <script>
     export default {
         onrender () {
-            localStorage.removeItem("apiKey")
         },
         data () {
             return {
@@ -49,18 +48,14 @@
                     this.set({ error: 'You must provide a name and a password.' })
                 } else {
                     this.set({ error: 'Connection in progress...' })
-                    window.axios.post('/api/auth', {
+                    window.app.api.post('/auth', {
                         name: name,
                         password: password
                     }).then(function (response) {
-                        localStorage.setItem("apiKey", response.data.key)
-                        window.app.go('torrents')
+                        window.app.api.setApiKey(response.data.key)
+                        window.app.router.go('torrents')
                     }).catch(function (error) {
-                        if (error.response && error.response.data) {
-                            this.set({ error: error.response.data.error })
-                        } else {
-                            this.set({ error: error.message })
-                        }
+                        this.set({ error: error })
                     }.bind(this))
                 }
             }

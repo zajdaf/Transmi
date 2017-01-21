@@ -108,39 +108,12 @@ section.auth button {
 article.torrent-preview {
     border-bottom: 1px solid #bdc3c7;
     cursor: pointer;
-    padding: 5px 5px 5px 60px;
-    position: relative;
-    min-height: 70px;
+    padding: 5px;
     font-size: 11px;
+    opacity: 0.9;
 }
-article.torrent-preview:hover, article.torrent-preview.active {
-    background-color: #e0e4e4;
-}
-article.torrent-preview div.action {
-    position: absolute;
-    top: 15px;
-    left: 5px;
-}
-article.torrent-preview div.action a {
-    width: 50px;
-    height: 50px;
-    background-color: #27ae60;
-    border-radius: 50%;
-    display: inline-block;
-    text-align: center;
-    line-height: 50px;
-    margin: 0;
-    padding: 0;
-    font-size: 25px;
-    color: #ecf0f1;
-}
-article.torrent-preview div.action a i.icon {
-    vertical-align: top;
-}
-article.torrent-preview div.action a:hover, article.torrent-preview div.action a:focus, article.torrent-preview div.action a:active {
-    background-color: #2ecc71;
-    color: #ecf0f1;
-    text-decoration: none;
+article.torrent-preview:hover {
+    opacity: 1;
 }
 article.torrent-preview .progress {
     width: 100%;
@@ -158,4 +131,40 @@ article.torrent-preview .progress span {
     display: block;
     text-align: center;
     border-radius: 5px;
+}
+article.torrent-status-3, article.torrent-status-4 {
+    background: rgba(241, 196, 15, 0.2);
+}
+article.torrent-status-5, article.torrent-status-6 {
+    background: rgba(39, 174, 96, 0.2);
+}
+article.torrent-status-1, article.torrent-status-2, article.torrent-status-7 {
+    background: rgba(192, 57, 43, 0.2);
+}
+article.torrent-status-0 {
+    background: rgba(41, 128, 185, 0.2);
+}
+article.torrent-status-3 .progress span, article.torrent-status-4 .progress span {
+    background: rgba(241, 196, 15, 0.7);
+}
+article.torrent-status-5 .progress span, article.torrent-status-6 .progress span {
+    background: rgba(39, 174, 96, 0.7);
+}
+article.torrent-status-1 .progress span, article.torrent-status-2 .progress span, article.torrent-status-7 .progress span {
+    background: rgba(192, 57, 43, 0.7);
+}
+article.torrent-status-0 .progress span {
+    background: rgba(41, 128, 185, 0.7);
+}
+article.torrent-status-3:hover .progress span, article.torrent-status-4:hover .progress span {
+    background: rgba(241, 196, 15, 0.9);
+}
+article.torrent-status-5:hover .progress span, article.torrent-status-6:hover .progress span {
+    background: rgba(39, 174, 96, 0.9);
+}
+article.torrent-status-1:hover .progress span, article.torrent-status-2:hover .progress span, article.torrent-status-7:hover .progress span {
+    background: rgba(192, 57, 43, 0.9);
+}
+article.torrent-status-0:hover .progress span {
+    background: rgba(41, 128, 185, 0.9);
 }

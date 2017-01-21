@@ -12,34 +12,95 @@
         <a href="#">Stats</a>
     </nav>
 </header>
-<section class="body">
-    <h2>Torrent ID: {{torrentId}}</h2>
 
+<section class="body">
     <section class="torrents">
-        <article class="torrent-preview">
-            <div class="action"><a href="#"><i class="icon">&#9658;</i></a></div>
-            <h3>ubuntu-13.10-desktop-amd64.iso</h3>
-            <div class="stat">Downloading - 73.0 MB of 883.0 MB (8.26%) - 26 min 34 sec remaining - <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s</div>
-            <div class="progress"><span style="width: 8.26%">8.26%</span></div>
+        {{#each torrents as torrent}}
+        <article class="torrent-preview torrent-status-{{torrent.status}}">
+            <h3>{{torrent.name}}</h3>
+            <div class="stat">
+                {{formatStatus(torrent.status)}} -
+                {{formatSize(torrent.haveValid)}} of {{formatSize(torrent.sizeWhenDone)}} ({{torrent.percentDone*100}}%) -
+                {{#if torrent.eta >= 0 }}{{formatDuration(torrent.eta)}} remaining -{{/if}}
+                <i class="icon">&#8681;</i> {{formatSize(torrent.rateDownload)}}/s, <i class="icon">&#8679;</i> {{formatSize(torrent.rateUpload)}}/s</div>
+            <div class="progress"><span style="width: {{torrent.percentDone*100}}%">{{torrent.percentDone*100}}%</span></div>
+            {{#if torrent.errorString }}<div class="warn"><i class="icon">&#9888;</i> {{torrent.errorString}}</div>{{/if}}
+            {{#if torrent.errorServer }}<div class="warn"><i class="icon">&#9888;</i> {{torrent.errorServer}}</div>{{/if}}
         </article>
-        <article class="torrent-preview">
-            <div class="action"><a href="#"><i class="icon">&#10006;</i></a></div>
-            <h3>Seul sur Mars (2015) [1080p] MULTI (VFF-VOA-VFQ) Bluray x264 AC3-PopHD (The Martian).mkv</h3>
-            <div class="stat">Downloading - 73.0 MB of 883.0 MB (28.26%) - 26 min 34 sec remaining - <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s</div>
-            <div class="progress"><span style="width: 28.26%">28.26%</span></div>
-            <div class="warn"><i class="icon">&#9888;</i> My error...</div>
-        </article>
-        <article class="torrent-preview">
-            <div class="action"><a href="#"><i class="icon">&#10074;</i><i class="icon">&#10074;</i></a></div>
-            <h3>ubuntu-13.10-desktop-amd64.iso</h3>
-            <div class="stat">Downloading - 73.0 MB of 883.0 MB (0.0%) - 26 min 34 sec remaining - <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s</div>
-            <div class="progress"><span style="width: 0.0%">0.0%</span></div>
-        </article>
-        <article class="torrent-preview">
-            <div class="action"><a href="#"><i class="icon">&#9724;</i></a></div>
-            <h3>ubuntu-13.10-desktop-amd64.iso</h3>
-            <div class="stat">Downloading - 73.0 MB of 883.0 MB (100.0%) - 26 min 34 sec remaining - <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s</div>
-            <div class="progress"><span style="width: 100.0%">100.0%</span></div>
-        </article>
+        {{/each}}
     </section>
 </section>
+
+<script>
+    export default {
+        onrender () {
+            window.app.api.get('/torrents').then(function (response) {
+                console.log(response.data)
+                this.set({ torrents: response.data })
+            }.bind(this)).catch(function (error) {
+                console.error(error)
+            })
+        },
+        data () {
+            return {
+                torrents: []
+            }
+        },
+        helpers: {
+            formatStatus: function (status) {
+                if (status === 0) {
+                    return 'Paused'
+                } else if (status === 1) {
+                    return 'Waiting for check'
+                } else if (status === 2) {
+                    return 'Checking'
+                } else if (status === 3) {
+                    return 'Waiting for download'
+                } else if (status === 4) {
+                    return 'Downloading'
+                } else if (status === 5) {
+                    return 'Waiting for seed'
+                } else if (status === 6) {
+                    return 'Seeding'
+                } else if (status === 7) {
+                    return 'Isolated'
+                }
+                return 'Unknown status (' + status + ')'
+            },
+            formatSize: function (size) {
+                var unit = 'GB'
+                var modifier = 1000000000
+
+                if (size < 1000) {
+                    unit = 'B'
+                    modifier = 1
+                } else if (size < 1000000) {
+                    unit = 'kB'
+                    modifier = 1000
+                } else if (size < 1000000000) {
+                    unit = 'MB'
+                    modifier = 1000000
+                }
+
+                return parseInt(size / modifier * 100) / 100 + ' ' + unit
+            },
+            formatDuration: function (time) {
+                console.log(time)
+                if (time < 0) {
+                    time = time * -1
+                }
+                var hour = Math.trunc(time / (60*60))
+                var min = Math.trunc((time - hour*60*60) / 60)
+                var sec = Math.trunc((time - hour*60*60 - min*60))
+                if (hour) {
+                    return hour + ' hour ' + min + ' min'
+                }
+                return min + ' min ' + sec + ' sec'
+            }
+        },
+        methods: {
+            connect: function () {
+            }
+        }
+    }
+</script>

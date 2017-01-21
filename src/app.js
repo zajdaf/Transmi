@@ -20,7 +20,7 @@ app.use("/api", (req, res, next) =>
 	if (req.headers.authorization)
 	{
 		if (authKeys.get(req.headers.authorization))
-			return(next)
+			return next()
 	}
 	let err = new Error("Authentification failed")
 	err.status = 403

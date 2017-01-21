@@ -8,9 +8,10 @@ let torrentRouter = () => {
 	let router = express.Router()
 	let transmission = new Transmission(config.transmission_options);
 
-	router.get("/", (req, res, next) => 
+	router.get("/", (req, res, next) =>
 	{
 		/* todo: find ids of user's torrents and then transmission.get(ids, ...*/
+		transmission.methods.torrents.fields = ['error', 'errorString', 'eta', 'haveValid', 'id', 'name', 'percentDone', 'rateDownload', 'rateUpload', 'sizeWhenDone', 'status', 'uploadRatio']
 		transmission.get((err, arg) => {
 			if (err)
 				console.error(err)
@@ -22,16 +23,17 @@ let torrentRouter = () => {
 			}
 		});
 	})
-	router.get("/:id", (req, res, next) => 
+	router.get("/:id", (req, res, next) =>
 	{
+		transmission.methods.torrents.fields = ['activityDate', 'addedDate', 'comment', 'doneDate', 'downloadDir', 'error', 'errorString', 'eta', 'files', 'hashString', 'haveUnchecked', 'haveValid', 'id', 'isFinished', 'name', 'peersConnected', 'peersGettingFromUs', 'peersSendingToUs', 'percentDone', 'pieceCount', 'rateDownload', 'rateUpload', 'sizeWhenDone', 'status', 'totalSize', 'trackerStats', 'uploadRatio']
 		res.json("torrent details")
 	})
-	router.post("/", (req, res, next) => 
+	router.post("/", (req, res, next) =>
 	{
 		console.log(req.body.torrentname, req.body.torrentfile)
 		res.json("add torrent")
 	})
-	router.delete("/:id", (req, res, next) => 
+	router.delete("/:id", (req, res, next) =>
 	{
 		/*delete torrent files*/
 		console.log(req.body.torrentname, req.body.torrentfile)

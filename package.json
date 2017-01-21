@@ -1,0 +1,23 @@
+{
+  "name": "torrent-web-interface",
+  "version": "1.0.0",
+  "description": "Torrent web interface",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zajdaf/Torrent-web-interface.git"
+  },
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "author": "Zajda Florent & Maigret Aurélien",
+  "license": "SEE LICENSE IN LICENCE",
+  "bugs": {
+    "url": "https://github.com/zajdaf/Torrent-web-interface/issues"
+  },
+  "homepage": "https://github.com/zajdaf/Torrent-web-interface#readme",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "express": "^4.14.0",
+    "transmission": "^0.4.8"
+  }
+}

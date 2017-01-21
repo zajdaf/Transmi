@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Torrent web interface</title>
+    <link rel="stylesheet" href="style.css" type="text/css" media="all" />
+</head>
+<body>
+    <main></main>
+    <script src='components/Auth.js'></script>
+    <script src='components/Torrents.js'></script>
+    <script src='lib/Router.js'></script>
+    <script>
+    var routes = [
+        { name: 'auth', path: '/auth', component: Auth },
+        { name: 'torrents', path: '/torrents', component: Torrents, data: { torrentId: null } },
+        { name: 'torrent', path: '/torrents/:torrentId', component: Torrents }
+    ]
+    var app = new Router(routes, document.querySelector('main'))
+    /*var app = new HelloWorld({
+        target: document.querySelector('main'),
+        data: {
+            name: 'world'
+        }
+    });*/
+    </script>
+</body>
+</html>

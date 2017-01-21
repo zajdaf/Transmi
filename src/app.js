@@ -24,7 +24,7 @@ app.use((req, res, next) =>
 })
 app.use("/torrents", torrentsRoutes())
 
-app.use(express.static("src/web"))
+app.use(express.static('src/web/public'))
 // app.use(errorHandling)
 
 app.listen(7897, function ()

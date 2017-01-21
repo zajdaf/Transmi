@@ -7,7 +7,8 @@
     "url": "git+https://github.com/zajdaf/Torrent-web-interface.git"
   },
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "build-web": "svelte compile --format iife -i src/web/components -o src/web/public/components"
   },
   "author": "Zajda Florent & Maigret Aurélien",
   "license": "SEE LICENSE IN LICENCE",
@@ -18,6 +19,7 @@
   "dependencies": {
     "body-parser": "^1.16.0",
     "express": "^4.14.0",
+    "svelte-cli": "^1.3.0",
     "transmission": "^0.4.8"
   }
 }

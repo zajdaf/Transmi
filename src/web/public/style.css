@@ -1,0 +1,155 @@
+/* Colors: https://www.materialui.co/flatuicolors */
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #ecf0f1;
+    color: #2c3e50;
+}
+
+html, body, input, textarea {
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif, "Segoe UI Symbol";
+    font-size: 13px;
+}
+h1, h2, h3, h4, h5, h6 {
+    color: #2980b9;
+    margin: 0;
+    padding: 7px;
+}
+a, a:link, a:visited, a:hover, a:active, a:focus {
+    color: #27ae60;
+    text-decoration: none;
+}
+a:hover, a:active, a:focus {
+    text-decoration: underline;
+}
+a.button, a.button:link, a.button:visited, a.button:hover, a.button:active, a.button:focus, button {
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 3px;
+    background: #27ae60;
+    color: #ecf0f1;
+    border: 0;
+    padding: 3px 6px;
+    cursor: pointer;
+    margin: 5px 0;
+}
+a.button:hover, a.button:active, a.button:focus, button:hover, button:active, button:focus, button.active {
+    background: #2ecc71;
+}
+input, textarea {
+    display: inline-block;
+    width: calc(100% - 14px);
+    padding: 3px 6px;
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+    margin: 5px 0;
+}
+
+i.icon {
+    font-family: Arial;
+    font-style: normal;
+}
+
+header.body {
+    background: #2980b9;
+    color: #ecf0f1;
+    border-bottom: 1px solid #95a5a6;
+}
+header.body section article.general-stats {
+    float: right;
+    padding: 5px;
+    margin-right: 20px;
+}
+header.body nav {
+    clear: both;
+    margin: 15px 5px 5px;
+}
+header.body nav a {
+    border-radius: 5px;
+    padding: 3px 6px;
+    display: inline-block;
+}
+header.body nav a:hover, header.body nav a:active, header.body nav a:focus, header.body nav a.active {
+    background-color: #27ae60;
+    color: #ecf0f1;
+}
+header.body h1, header.body nav a {
+    color: #ecf0f1;
+}
+
+section.auth {
+    margin: 20px auto 10px;
+    padding: 20px;
+    width: calc(100% - 40px);
+    max-width: 300px;
+}
+section.auth button {
+    margin: 10px auto;
+    width: calc(100% - 40px);
+    max-width: 150px;
+    padding: 6px 20px;
+    display: block;
+    font-size: 14px;
+}
+
+article.torrent-preview {
+    border-bottom: 1px solid #bdc3c7;
+    cursor: pointer;
+    padding: 5px 5px 5px 60px;
+    position: relative;
+    min-height: 70px;
+    font-size: 11px;
+}
+article.torrent-preview:hover, article.torrent-preview.active {
+    background-color: #e0e4e4;
+}
+article.torrent-preview div.action {
+    position: absolute;
+    top: 15px;
+    left: 5px;
+}
+article.torrent-preview div.action a {
+    width: 50px;
+    height: 50px;
+    background-color: #27ae60;
+    border-radius: 50%;
+    display: inline-block;
+    text-align: center;
+    line-height: 50px;
+    margin: 0;
+    padding: 0;
+    font-size: 25px;
+    color: #ecf0f1;
+}
+article.torrent-preview div.action a i.icon {
+    vertical-align: top;
+}
+article.torrent-preview div.action a:hover, article.torrent-preview div.action a:focus, article.torrent-preview div.action a:active {
+    background-color: #2ecc71;
+    color: #ecf0f1;
+    text-decoration: none;
+}
+article.torrent-preview .progress {
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    margin: 5px 0;
+    background-color: #bdc3c7;
+}
+article.torrent-preview .progress span {
+    background-color: #16a085;
+    color: #ecf0f1;
+    font-size: 10px;
+    height: 15px;
+    width: 0%;
+    display: block;
+    text-align: center;
+    border-radius: 5px;
+}
+article.torrent-preview .warn {
+    background: #c0392b;
+    border-radius: 3px;
+    padding: 1px 5px;
+    display: inline-block;
+    color: #ecf0f1;
+}

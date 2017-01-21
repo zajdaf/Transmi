@@ -8,10 +8,14 @@ const torrentsRoutes = require('./controllers/torrents')
 let app = express()
 
 app.use(bodyParser.json())
-// app.use(sessionMiddleware)
 
-app.use("/auth", authRoutes())
-app.use((req, res, next) =>
+app.use((req, res, next) => {
+	console.info(`[web.component] ${req.method} ${req.originalUrl} from ${req.ip}`)
+	next()
+})
+
+app.use("/api/auth", authRoutes())
+app.use("/api", (req, res, next) =>
 {
 	if (req.headers.authorization)
 	{
@@ -22,10 +26,15 @@ app.use((req, res, next) =>
 	err.status = 403
 	next(err)
 })
-app.use("/torrents", torrentsRoutes())
+app.use("/api/torrents", torrentsRoutes())
 
 app.use(express.static('src/web/public'))
-// app.use(errorHandling)
+
+app.use((err, req, res, next) => {
+	res.status(err.status || 400)
+	res.json({ error: err.message })
+	console.error(err.stack)
+})
 
 app.listen(7897, function ()
 {

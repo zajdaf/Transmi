@@ -1,4 +1,3 @@
-const http = require('http')
 const express = require('express')
 const bodyParser = require('body-parser')
 
@@ -10,6 +9,7 @@ app.use(bodyParser.json())
 app.use(express.static('src/web'))
 // app.use(errorHandling)
 
-let server = http.createServer(app)
-server.listen(6587)
-console.info('[web-component]', 'server running on port', 6587)
+app.listen(7897, function ()
+{
+	console.info('[web-component]', 'server running on port', 7897)
+}

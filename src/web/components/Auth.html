@@ -3,8 +3,67 @@
         <h1>Authentification required</h1>
     </section>
 </header>
+
 <section class="auth">
-    <input type="text" placeholder="Username">
-    <input type="password" placeholder="Password">
-    <button>Connect</button>
+    {{#if error}}
+        <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
+    {{/if}}
+    <input type="text" placeholder="Name" bind:value="name" on:keyEnter="connect()">
+    <input type="password" placeholder="Password" bind:value="password" on:keyEnter="connect()">
+    <button on:click="connect()">Connect</button>
 </section>
+
+<script>
+    export default {
+        onrender () {
+            localStorage.removeItem("apiKey")
+        },
+        data () {
+            return {
+                name: "",
+                password: "",
+                error: null
+            }
+        },
+        events: {
+            keyEnter (node, callback) {
+                var self = this
+                function onkeyup(e) {
+                    if (e.which === 13 || e.keyCode === 13) {
+                        callback(event)
+                    }
+                }
+                node.addEventListener('keyup', onkeyup, false)
+                return {
+                    teardown () {
+                        node.removeEventListener('keyup', onkeyup, false)
+                    }
+                }
+            }
+        },
+        methods: {
+            connect: function () {
+                var name = this.get('name')
+                var password = this.get('password')
+                if (!name || !password) {
+                    this.set({ error: 'You must provide a name and a password.' })
+                } else {
+                    this.set({ error: 'Connection in progress...' })
+                    window.axios.post('/api/auth', {
+                        name: name,
+                        password: password
+                    }).then(function (response) {
+                        localStorage.setItem("apiKey", response.data.key)
+                        window.app.go('torrents')
+                    }).catch(function (error) {
+                        if (error.response && error.response.data) {
+                            this.set({ error: error.response.data.error })
+                        } else {
+                            this.set({ error: error.message })
+                        }
+                    }.bind(this))
+                }
+            }
+        }
+    }
+</script>

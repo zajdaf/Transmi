@@ -49,6 +49,13 @@ i.icon {
     font-family: Arial;
     font-style: normal;
 }
+.warn {
+    background: #c0392b;
+    border-radius: 3px;
+    padding: 1px 5px;
+    display: inline-block;
+    color: #ecf0f1;
+}
 
 header.body {
     background: #2980b9;
@@ -82,6 +89,12 @@ section.auth {
     padding: 20px;
     width: calc(100% - 40px);
     max-width: 300px;
+}
+section.auth .warn {
+    display: block;
+    text-align: center;
+    margin: 5px 0 10px;
+    padding: 5px;
 }
 section.auth button {
     margin: 10px auto;
@@ -145,11 +158,4 @@ article.torrent-preview .progress span {
     display: block;
     text-align: center;
     border-radius: 5px;
-}
-article.torrent-preview .warn {
-    background: #c0392b;
-    border-radius: 3px;
-    padding: 1px 5px;
-    display: inline-block;
-    color: #ecf0f1;
 }

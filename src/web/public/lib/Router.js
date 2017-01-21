@@ -7,7 +7,7 @@ var Router = (function () { 'use strict';
         this.routes = []
         this.currentRoute = null
         this.currentComponent = null
-        this.target = target
+        this.target = target.querySelector('router')
 
         for (var i = 0; i < routes.length; i++) {
             var params = []
@@ -17,6 +17,7 @@ var Router = (function () { 'use strict';
                 return '([a-zA-Z0-9_-]+)'
             })
             this.routes.push({
+                name: routes[i].name,
                 path: routes[i].path,
                 component: routes[i].component,
                 regexp: new RegExp('^' + regex + '$'),

@@ -5,5 +5,6 @@ module.exports = {
     transmission_options: {
     	port: 80,
     	host: 'seedbox.dewep.net'
-    }
+    },
+    downloads_directory: ""
 }

@@ -51,6 +51,19 @@ let torrentRouter = () => {
 			}
 		});
 	})
+	router.get("/details", (req, res, next) =>
+	{
+		transmission.session((err, arg) =>
+		{
+			if (err)
+			{
+				console.error(err)
+				res.json("transmission error")
+			}
+			else
+				res.json(arg)
+		});
+	})
 	router.get("/:id", (req, res, next) =>
 	{
 		let user = db.get(req.user, [])
@@ -73,42 +86,36 @@ let torrentRouter = () => {
 			}
 		})
 	})
+	function addTorrent (err, arg, res, user)
+	{
+		if (err)
+		{
+			console.error(err)
+			res.json("transmission error")
+		}
+		else
+		{
+			user.customData[arg.torrents[0].id] = {"downloadPath" : path}
+			user.ids.push(arg.torrents[0].id)
+			db.set(req.user, user)
+			res.json(arg.torrents)
+		}
+	}
 	router.post("/", (req, res, next) =>
 	{
 		let user = db.get(req.user, [])
 		let path = user + "/" + Math.random().toString(36).substring(2, 22)
 		console.log(req.body.torrentname, req.body.torrentfile)
 		if (req.torrentfile)
-		{
 			transmission.addFile(req.torrentfile, {"download-dir":path}, (err, arg) =>
 			{
-				if (err)
-				{
-					console.error(err)
-					res.json("transmission error")
-				}
-				else
-				{
-					user.customData[arg.torrents[0].id] = {"downloadPath" : path}
-					user.ids.push(arg.torrents[0].id)
-					db.set(req.user, user)
-					res.json(arg.torrents)
-				}
+				addTorrent(err, arg, res, user)
 			})
-		}
 		else
-		{
 			transmission.addUrl(req.torrentfile, {"download-dir":path}, (err, arg) =>
 			{
-				if (err)
-				{
-					console.error(err)
-					res.json("transmission error")
-				}
-				else
-					res.json(arg.torrents)
+				addTorrent(err, arg, res, user)
 			})
-		}
 	})
 	router.delete("/:id", (req, res, next) =>
 	{

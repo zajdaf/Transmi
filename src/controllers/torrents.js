@@ -64,6 +64,30 @@ let torrentRouter = () => {
 				res.json(arg)
 		});
 	})
+	router.get("/usersstats", (req, res, next) =>
+	{
+		result = {}
+		for (var prop in config.users)
+		{
+			if (config.users.hasOwnProperty(prop))
+			{
+				result[prop] = {}
+				result[prop]["rateDownload"] = 0
+				result[prop]["rateUpload"] = 0
+				result[prop]["sizeWhenDone"] = 0
+				transmission.methods.torrents.fields = ["rateDownload", "rateUpload", "sizeWhenDone"]
+				transmission.get(db.get(prop).ids, (err, arg) =>
+				{
+					for (t in arg.torrents)
+					{
+						result[prop]["rateDownload"] += t.rateDownload
+						result[prop]["rateUpload"] += t.rateUpload
+						result[prop]["sizeWhenDone"] += t.sizeWhenDone
+					}
+				})
+			}
+		}
+	})
 	router.get("/:id", (req, res, next) =>
 	{
 		let user = db.get(req.user, [])

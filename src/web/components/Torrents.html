@@ -1,26 +1,14 @@
-<header class="body">
-    <section>
-        <article class="general-stats">
-            [General] <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s<br>
-            [You] <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s
-        </article>
-        <h1>Seedbox torrent web interface</h1>
-    </section>
-    <nav>
-        <a href="#" class="active">Torrents</a>
-        <a href="#">Add torrent</a>
-        <a href="#">Stats</a>
-    </nav>
-</header>
+<Header />
 
 <section class="body">
     <section class="torrents">
         {{#each torrents as torrent}}
-        <article class="torrent-preview torrent-status-{{torrent.status}}">
+        <article class="torrent-preview torrent-status-{{torrent.status}}" on:click="openTorrent(torrent.id)">
             <h3>{{torrent.name}}</h3>
             <div class="stat">
                 {{formatStatus(torrent.status)}} -
                 {{formatSize(torrent.haveValid)}} of {{formatSize(torrent.sizeWhenDone)}} ({{torrent.percentDone*100}}%) -
+                Ratio {{torrent.uploadRatio}} -
                 {{#if torrent.eta >= 0 }}{{formatDuration(torrent.eta)}} remaining -{{/if}}
                 <i class="icon">&#8681;</i> {{formatSize(torrent.rateDownload)}}/s, <i class="icon">&#8679;</i> {{formatSize(torrent.rateUpload)}}/s</div>
             <div class="progress"><span style="width: {{torrent.percentDone*100}}%">{{torrent.percentDone*100}}%</span></div>
@@ -34,12 +22,17 @@
 <script>
     export default {
         onrender () {
-            window.app.api.get('/torrents').then(function (response) {
-                console.log(response.data)
-                this.set({ torrents: response.data })
-            }.bind(this)).catch(function (error) {
-                console.error(error)
-            })
+            this.interval = setInterval(function () {
+                window.app.api.get('/torrents').then(function (response) {
+                    console.log(response.data)
+                    this.set({ torrents: response.data })
+                }.bind(this)).catch(function (error) {
+                    console.error(error)
+                })
+            }.bind(this), 1000)
+        },
+        onteardown () {
+            clearInterval(this.interval)
         },
         data () {
             return {
@@ -47,58 +40,16 @@
             }
         },
         helpers: {
-            formatStatus: function (status) {
-                if (status === 0) {
-                    return 'Paused'
-                } else if (status === 1) {
-                    return 'Waiting for check'
-                } else if (status === 2) {
-                    return 'Checking'
-                } else if (status === 3) {
-                    return 'Waiting for download'
-                } else if (status === 4) {
-                    return 'Downloading'
-                } else if (status === 5) {
-                    return 'Waiting for seed'
-                } else if (status === 6) {
-                    return 'Seeding'
-                } else if (status === 7) {
-                    return 'Isolated'
-                }
-                return 'Unknown status (' + status + ')'
-            },
-            formatSize: function (size) {
-                var unit = 'GB'
-                var modifier = 1000000000
-
-                if (size < 1000) {
-                    unit = 'B'
-                    modifier = 1
-                } else if (size < 1000000) {
-                    unit = 'kB'
-                    modifier = 1000
-                } else if (size < 1000000000) {
-                    unit = 'MB'
-                    modifier = 1000000
-                }
-
-                return parseInt(size / modifier * 100) / 100 + ' ' + unit
-            },
-            formatDuration: function (time) {
-                if (time < 0) {
-                    time = time * -1
-                }
-                var hour = Math.trunc(time / (60*60))
-                var min = Math.trunc((time - hour*60*60) / 60)
-                var sec = Math.trunc((time - hour*60*60 - min*60))
-                if (hour) {
-                    return hour + ' hour ' + min + ' min'
-                }
-                return min + ' min ' + sec + ' sec'
-            }
+            formatStatus: window.GenericHelpers.formatTorrentStatus,
+            formatSize: window.GenericHelpers.formatSize,
+            formatDuration: window.GenericHelpers.formatDuration
+        },
+        components: {
+            Header
         },
         methods: {
-            connect: function () {
+            openTorrent: function (torrentId) {
+                window.app.router.go('torrent', { torrentId: torrentId })
             }
         }
     }

@@ -1,0 +1,131 @@
+<Header />
+
+<section class="body">
+    {{#if torrent}}
+    <section class="tabs {{selectedTab ? 'tab-selected' : ''}}">
+        <nav>
+            <div on:click="set({'selectedTab': 'detail'})" class="{{!selectedTab ? 'default-selected' : ''}} {{selectedTab == 'detail' ? 'selected' : ''}}">Torrent detail</div>
+            <div on:click="set({'selectedTab': 'browse'})" class="{{selectedTab == 'browse' ? 'selected' : ''}}">Browse files</div>
+        </nav>
+        {{#if !selectedTab || selectedTab == 'detail'}}
+        <article class="tab-content">
+            <h2>{{torrent.name}}</h2>
+
+            <h3>Actions</h3>
+            Status: {{formatStatus(torrent.status)}}<br>
+            <button>Resume</button>
+            <button>Pause</button>
+            <button>Delete</button>
+            <button>Make an archive</button><br>
+
+            <h3>Activity</h3>
+            Have valid: {{formatSize(torrent.haveValid)}} ({{torrent.percentDone*100}}%)<br>
+            Have unchecked: {{formatSize(torrent.haveUnchecked)}}<br>
+            Total size: {{formatSize(torrent.totalSize)}}<br>
+            Upload ratio: {{torrent.uploadRatio}}<br>
+            Eta: {{formatDuration(torrent.eta)}}<br>
+            Rate download: {{formatSize(torrent.rateDownload)}}/s<br>
+            Rate upload: {{formatSize(torrent.rateUpload)}}/s<br>
+            Added date: {{formatDate(torrent.addedDate)}}<br>
+            Done date: {{formatDate(torrent.doneDate)}}<br>
+            Activity date: {{formatDate(torrent.activityDate)}}<br>
+            Error: {{torrent.error}} ({{torrent.errorString}})<br><br>
+
+            <h3>Details</h3>
+            ID: {{torrent.id}}<br>
+            Hash: {{torrent.hashString}}<br>
+            Size when done: {{formatSize(torrent.sizeWhenDone)}}<br>
+            Download directory: {{torrent.downloadDir}}<br>
+            Comment: {{torrent.comment}}<br><br>
+
+            <h3>Trackers/peers</h3>
+            Peers connected: {{torrent.peersConnected}}<br>
+            Peers getting from us: {{torrent.peersGettingFromUs}}<br>
+            Peers sending to us: {{torrent.peersSendingToUs}}<br><br>
+
+            {{#if torrent.trackerStats}}
+            {{#each torrent.trackerStats as stat}}
+            <h4>{{stat.host}}</h4>
+            Downloads: {{stat.downloadCount}}<br>
+            Leechers: {{stat.leecherCount}}<br>
+            Seeders: {{stat.seederCount}}<br>
+            Announce state: {{stat.announceState}}<br>
+            Has announced: {{stat.hasAnnounced}}<br>
+            Last announce peer count: {{stat.lastAnnouncePeerCount}}<br>
+            Last announce result: {{stat.lastAnnounceResult}}<br>
+            Last announce succeeded: {{stat.lastAnnounceSucceeded}}<br>
+            Last announce time: {{formatDate(stat.lastAnnounceTime)}}<br>
+            Last announce timed out: {{stat.lastAnnounceTimedOut}}<br>
+            Last scrape result: {{stat.lastScrapeResult}}<br>
+            Last scrape succeeded: {{stat.lastScrapeSucceeded}}<br>
+            Last scrape time: {{formatDate(stat.lastScrapeTime)}}<br>
+            last scrape timed out: {{stat.lastScrapeTimedOut}}<br>
+            Next announce time: {{formatDate(stat.nextAnnounceTime)}}<br>
+            Next scrape time: {{formatDate(stat.nextScrapeTime)}}<br><br>
+            {{/each}}
+            {{/if}}
+        </article>
+        {{/if}}
+        {{#if selectedTab == 'browse'}}
+        <article class="tab-content">
+            <h2>{{torrent.name}}</h2>
+            <button>Make an archive</button>
+            {{#if torrent.files}}
+            <ul>
+                {{#each torrent.files as file}}
+                <li><a href="/download/../../{{file.name}}">{{file.name}}</a> ({{formatSize(file.bytesCompleted)}} of {{formatSize(file.length)}})</li>
+                {{/each}}
+            </ul>
+            {{/if}}
+        </article>
+        {{/if}}
+    </section>
+    {{else}}
+    Torrent loading...
+    {{/if}}
+</section>
+
+<script>
+    export default {
+        onrender () {
+            this.updateInfos()
+        },
+        onteardown () {
+            clearInterval(this.interval)
+        },
+        data () {
+            return {
+                selectedTab: null,
+                torrent: {}
+            }
+        },
+        helpers: {
+            formatStatus: window.GenericHelpers.formatTorrentStatus,
+            formatSize: window.GenericHelpers.formatSize,
+            formatDate: window.GenericHelpers.formatDate,
+            formatDuration: window.GenericHelpers.formatDuration
+        },
+        components: {
+            Header
+        },
+        methods: {
+            openTorrent: function (torrentId) {
+                window.app.router.go('torrent', { torrentId: torrentId })
+            },
+            updateInfos () {
+                var torrentId = this.get('torrentId')
+                window.app.api.get('/torrents/' + torrentId).then(function (response) {
+                    if (response.data.length) {
+                        console.log('torrent', response.data[0])
+                        this.set({ torrent: response.data[0] })
+                    } else {
+                        console.warn('torrent not found', torrentId, response.data)
+                        window.app.router.go('torrents')
+                    }
+                }.bind(this)).catch(function (error) {
+                    console.error(error)
+                })
+            }
+        }
+    }
+</script>

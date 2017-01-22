@@ -6,8 +6,11 @@
 </head>
 <body>
     <main><router></router></main>
+    <script src='lib/GenericHelpers.js'></script>
     <script src='components/Auth.js'></script>
+    <script src='components/Header.js'></script>
     <script src='components/Torrents.js'></script>
+    <script src='components/Torrent.js'></script>
     <script src='lib/axios-0.15.3.min.js'></script>
     <script src='lib/API.js'></script>
     <script src='lib/Router.js'></script>
@@ -17,17 +20,12 @@
     window.app.routes = [
         { name: 'auth', path: '/auth', component: Auth },
         { name: 'torrents', path: '/torrents', component: Torrents, data: { torrentId: null } },
-        { name: 'torrent', path: '/torrents/:torrentId', component: Torrents }
+        { name: 'torrent', path: '/torrents/:torrentId', component: Torrent }
     ]
 
     window.app.api = new API()
     window.app.router = new Router(window.app.routes, document.querySelector('main'))
 
-    if (app.api.isConnected()) {
-        window.app.router.go('torrents')
-    } else {
-        window.app.router.go('auth')
-    }
     window.app.router.updateRouteFromLocationHash()
     </script>
 </body>

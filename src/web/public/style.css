@@ -29,9 +29,10 @@ a.button, a.button:link, a.button:visited, a.button:hover, a.button:active, a.bu
     background: #27ae60;
     color: #ecf0f1;
     border: 0;
-    padding: 3px 6px;
+    padding: 4px 10px;
     cursor: pointer;
-    margin: 5px 0;
+    margin: 5px 2px;
+    font-weight: bold;
 }
 a.button:hover, a.button:active, a.button:focus, button:hover, button:active, button:focus, button.active {
     background: #2ecc71;
@@ -132,7 +133,7 @@ article.torrent-preview .progress span {
     text-align: center;
     border-radius: 5px;
 }
-article.torrent-status-3, article.torrent-status-4 {
+/*article.torrent-status-3, article.torrent-status-4 {
     background: rgba(241, 196, 15, 0.2);
 }
 article.torrent-status-5, article.torrent-status-6 {
@@ -142,6 +143,18 @@ article.torrent-status-1, article.torrent-status-2, article.torrent-status-7 {
     background: rgba(192, 57, 43, 0.2);
 }
 article.torrent-status-0 {
+    background: rgba(41, 128, 185, 0.2);
+}*/
+article.torrent-status-3 .progress, article.torrent-status-4 .progress {
+    background: rgba(241, 196, 15, 0.2);
+}
+article.torrent-status-5 .progress, article.torrent-status-6 .progress {
+    background: rgba(39, 174, 96, 0.2);
+}
+article.torrent-status-1 .progress, article.torrent-status-2 .progress, article.torrent-status-7 .progress {
+    background: rgba(192, 57, 43, 0.2);
+}
+article.torrent-status-0 .progress {
     background: rgba(41, 128, 185, 0.2);
 }
 article.torrent-status-3 .progress span, article.torrent-status-4 .progress span {
@@ -167,4 +180,35 @@ article.torrent-status-1:hover .progress span, article.torrent-status-2:hover .p
 }
 article.torrent-status-0:hover .progress span {
     background: rgba(41, 128, 185, 0.9);
+}
+
+section.tabs > nav {
+    float: left;
+    width: 200px;
+}
+section.tabs > nav > div {
+    border: 1px solid #bdc3c7;
+    padding: 20px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 10px 0 10px 5px;
+    position: relative;
+}
+section.tabs > nav > div.selected, section.tabs > nav > div.default-selected {
+    background: #8e44ad;
+    color: #ecf0f1;
+}
+section.tabs > nav > div.selected:after, section.tabs > nav > div.default-selected:after {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-top: -13px;
+    border-left: 0;
+    border-bottom: 13px solid transparent;
+    border-top: 13px solid transparent;
+    border-left: 10px solid #8e44ad;
+}
+section.tabs > article.tab-content {
+    margin-left: 250px;
 }

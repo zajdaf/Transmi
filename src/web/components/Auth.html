@@ -8,7 +8,7 @@
     {{#if error}}
         <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
     {{/if}}
-    <input type="text" placeholder="Name" bind:value="name" on:keyEnter="connect()">
+    <input type="text" placeholder="Name" bind:value="name" on:keyEnter="connect()" autofocus>
     <input type="password" placeholder="Password" bind:value="password" on:keyEnter="connect()">
     <button on:click="connect()">Connect</button>
 </section>
@@ -16,6 +16,9 @@
 <script>
     export default {
         onrender () {
+            if (app.api.isConnected()) {
+                window.app.router.go('torrents')
+            }
         },
         data () {
             return {

@@ -1,0 +1,35 @@
+<header class="body">
+    <section>
+        <article class="general-stats">
+            [General] <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s<br>
+            [You] <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s
+        </article>
+        <h1>Seedbox torrent web interface</h1>
+    </section>
+    <nav>
+        <button on:click="router('torrents')">Torrents</button>
+        <button on:click="router('add-torrent')">Add torrent</button>
+        <button on:click="router('stats')">Stats</button>
+    </nav>
+</header>
+
+<script>
+    export default {
+        onrender () {
+        },
+        onteardown () {
+        },
+        data () {
+            return {
+            }
+        },
+        helpers: {
+            formatSize: window.GenericHelpers.formatSize
+        },
+        methods: {
+            router: function (location) {
+                window.app.router.go(location)
+            }
+        }
+    }
+</script>

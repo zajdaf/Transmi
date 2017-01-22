@@ -89,7 +89,7 @@ var Router = (function () { 'use strict';
                 window.location.hash = this.routes[i].path.replace(/:([a-zA-Z0-9_-]+)/g, function (match) {
                     paramIndex += 1
                     return '' + data[this.routes[i].params[paramIndex]]
-                })
+                }.bind(this))
                 return
             }
         }

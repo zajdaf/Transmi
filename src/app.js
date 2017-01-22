@@ -19,7 +19,8 @@ app.use("/api", (req, res, next) =>
 {
 	if (req.headers.authorization)
 	{
-		if (authKeys.get(req.headers.authorization))
+		req.user = authKeys.get(req.headers.authorization)
+		if (req.user)
 			return next()
 	}
 	let err = new Error("Authentification failed")

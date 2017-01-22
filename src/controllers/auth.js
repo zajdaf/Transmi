@@ -8,7 +8,7 @@ let authRouter = () => {
 
 	router.get("/", (req, res, next) =>
 	{
-		if (config.users["rg"] && config.users["rg"].password == "toto42")
+		if (config.users[req.user] && config.users[req.user].password == req.password)
 			res.json("gg")
 		else
 			res.json(Math.random().toString(36).substring(2, 22) + Math.random().toString(36).substring(2, 22))

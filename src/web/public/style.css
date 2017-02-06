@@ -2,12 +2,39 @@
 html, body {
     margin: 0;
     padding: 0;
-    background-color: #ecf0f1;
     color: #2c3e50;
+    background: #ecf0f1;
+    background: linear-gradient(270deg, #c2e0f3, #bef2d4);
+    background-size: 400% 400%;
+    -webkit-animation: AnimationGeneralBackground 4s ease infinite;
+    -moz-animation: AnimationGeneralBackground 4s ease infinite;
+    -o-animation: AnimationGeneralBackground 4s ease infinite;
+    animation: AnimationGeneralBackground 4s ease infinite;
+}
+
+@-webkit-keyframes AnimationGeneralBackground {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-moz-keyframes AnimationGeneralBackground {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-o-keyframes AnimationGeneralBackground {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@keyframes AnimationGeneralBackground {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
 }
 
 html, body, input, textarea {
-    font-family: "Segoe UI", Helvetica, Arial, sans-serif, "Segoe UI Symbol";
+    font-family: "Nunito", "Segoe UI", Helvetica, Arial, sans-serif, "Segoe UI Symbol";
     font-size: 13px;
 }
 h1, h2, h3, h4, h5, h6 {
@@ -39,11 +66,11 @@ a.button:hover, a.button:active, a.button:focus, button:hover, button:active, bu
 }
 input, textarea {
     display: inline-block;
-    width: calc(100% - 14px);
-    padding: 3px 6px;
+    width: calc(100% - 30px);
+    padding: 7px 14px;
     border: 1px solid #bdc3c7;
     border-radius: 3px;
-    margin: 5px 0;
+    margin: 7px 0;
 }
 
 i.icon {
@@ -99,9 +126,9 @@ section.auth .warn {
 }
 section.auth button {
     margin: 10px auto;
-    width: calc(100% - 40px);
+    width: calc(100% - 80px);
     max-width: 150px;
-    padding: 6px 20px;
+    padding: 10px 40px;
     display: block;
     font-size: 14px;
 }

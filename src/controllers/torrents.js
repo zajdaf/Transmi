@@ -110,41 +110,38 @@ let torrentRouter = () => {
 			}
 		})
 	})
-	function addTorrent (err, arg, res, user)
-	{
-		if (err)
-		{
-			console.error(err)
-			res.json("transmission error")
-		}
-		else
-		{
-			user.customData[arg.torrents[0].id] = {"downloadPath" : path}
-			user.ids.push(arg.torrents[0].id)
-			db.set(req.user, user)
-			res.json(arg.torrents)
-		}
-	}
 	router.post("/", (req, res, next) =>
 	{
 		let user = db.get(req.user, [])
 		let path = user + "/" + Math.random().toString(36).substring(2, 22)
-		console.log(req.body.torrentname, req.body.torrentfile)
-		if (req.torrentfile)
-			transmission.addFile(req.torrentfile, {"download-dir":path}, (err, arg) =>
+		function addTorrent (err, arg)
+		{
+			if (err)
 			{
-				addTorrent(err, arg, res, user)
-			})
+				console.error(err)
+				next(new Error(err))
+			}
+			else
+			{
+				console.log(arg)
+				// TODO
+				user.customData[arg.torrents[0].id] = {"downloadPath" : path}
+				user.ids.push(arg.torrents[0].id)
+				db.set(req.user, user)
+				res.json(arg.torrents)
+			}
+		}
+		if (req.body.base64)
+			transmission.addBase64(req.body.base64, {"download-dir":path}, addTorrent)
+		else if (req.body.url)
+			transmission.addUrl(req.body.url, {"download-dir":path}, addTorrent)
 		else
-			transmission.addUrl(req.torrentfile, {"download-dir":path}, (err, arg) =>
-			{
-				addTorrent(err, arg, res, user)
-			})
+			next(new Error("Bad torrent format"))
 	})
 	router.delete("/:id", (req, res, next) =>
 	{
 		let user = db.get(req.user, [])
-		transmission.remove([req.params.id], del=true, (err, arg) =>
+		transmission.remove([req.params.id], true, (err, arg) =>
 		{
 			if (err)
 			{

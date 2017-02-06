@@ -1,0 +1,49 @@
+<HeaderComponent />
+
+<section class="body">
+    {{#if error}}
+        <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
+    {{/if}}
+    <h2>Add torrent file</h2>
+    <input type="file" on:change="onChange(event)">
+</section>
+
+<script>
+    export default {
+        onrender () {
+        },
+        data () {
+            return {
+                error: null
+            }
+        },
+        helpers: {
+        },
+        components: {
+            HeaderComponent
+        },
+        methods: {
+            uploadFile: function (filePath) {
+                return new Promise(function (resolve) {
+                    var reader = new window.FileReader()
+                    reader.addEventListener("load", function () {
+                        resolve(reader.result.replace(/^(.*)base64,/, ""))
+                    }, false)
+                    reader.readAsDataURL(filePath)
+                }).then(function (base64) {
+                    return window.app.api.post('/torrents', { base64: base64})
+                })
+            },
+            onChange: function (event) {
+                if (!event || !event.target || !event.target.files[0]) {
+                    return
+                }
+                this.uploadFile(event.target.files[0]).then(function (response) {
+                    console.log('res', response)
+                }).catch(function (error) {
+                    this.set({ error: error })
+                }.bind(this))
+            }
+        }
+    }
+</script>

@@ -112,8 +112,8 @@ let torrentRouter = () => {
 	})
 	router.post("/", (req, res, next) =>
 	{
-		let user = db.get(req.user, [])
-		let path = user + "/" + Math.random().toString(36).substring(2, 22)
+		let user = db.get(req.user, {})
+		let path = req.user + "/" + Math.random().toString(36).substring(2, 22)
 		function addTorrent (err, arg)
 		{
 			if (err)
@@ -123,18 +123,16 @@ let torrentRouter = () => {
 			}
 			else
 			{
-				console.log(arg)
-				// TODO
-				user.customData[arg.torrents[0].id] = {"downloadPath" : path}
-				user.ids.push(arg.torrents[0].id)
+				user.customData[arg.id] = {"downloadPath" : path}
+				user.ids.push(arg.id)
 				db.set(req.user, user)
 				res.json(arg.torrents)
 			}
 		}
 		if (req.body.base64)
-			transmission.addBase64(req.body.base64, {"download-dir":path}, addTorrent)
+			transmission.addBase64(req.body.base64, {"download-dir": config.transmission_downloads_directory + path}, addTorrent)
 		else if (req.body.url)
-			transmission.addUrl(req.body.url, {"download-dir":path}, addTorrent)
+			transmission.addUrl(req.body.url, {"download-dir": config.transmission_downloads_directory + path}, addTorrent)
 		else
 			next(new Error("Bad torrent format"))
 	})
@@ -150,7 +148,7 @@ let torrentRouter = () => {
 			}
 			else
 			{
-				target = config.downloads_directory + "/" + user.customData[req.params.id]
+				target = config.downloads_directory + user.customData[req.params.id].downloadPath
 				if (target.length > 20) /*avoid accidental removal of '/' */
 				{
 					const child = exec("rm -r " + target,
@@ -200,7 +198,7 @@ let torrentRouter = () => {
 		if (!user.customData[req.params.id])
 			return res.json("id error")
 		user.customData[req.params.id].zipProcessing = true
-		target = config.downloads_directory + "/" + user.customData[req.params.id].downloadPath
+		target = config.downloads_directory + user.customData[req.params.id].downloadPath
 		const child = exec("cd " + target + " && zip -r "+ "ziperino.zip .",
 			(error, stdout, stderr) => {
 				user.customData[req.params.id].zipProcessing = false

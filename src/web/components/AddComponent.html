@@ -1,11 +1,13 @@
 <HeaderComponent />
 
 <section class="body">
-    {{#if error}}
-        <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
-    {{/if}}
-    <h2>Add torrent file</h2>
-    <input type="file" on:change="onChange(event)">
+    <article class="box">
+        {{#if error}}
+            <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
+        {{/if}}
+        <h2>Add torrent file</h2>
+        <input type="file" on:change="onChange(event)">
+    </article>
 </section>
 
 <script>

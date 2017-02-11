@@ -24,7 +24,9 @@
         onrender () {
             this.interval = setInterval(function () {
                 window.app.api.get('/torrents').then(function (response) {
-                    console.log(response.data)
+                    for (var i = 0; i < response.data.length; i++) {
+                        response.data[i].percentDone = Math.round(response.data[i].percentDone * 100) / 100
+                    }
                     this.set({ torrents: response.data })
                 }.bind(this)).catch(function (error) {
                     console.error(error)

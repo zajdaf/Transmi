@@ -1,0 +1,48 @@
+<div class="files">
+    {{#each tree as item}}
+        {{#if item.type == 'file'}}
+            <a href="{{item.url}}" class="file">{{item.name}} <span>{{formatSize(item.completed)}} of {{formatSize(item.total)}}</span></a>
+        {{else}}
+            {{#if item.isOpened}}
+                <div class="dir" on:click="close(item)"><i class="icon">&#x25BE;</i> {{item.name}} <span>Close folder</span></div>
+                <TorrentTreeComponent tree="{{item.childs}}"/>
+            {{else}}
+                <div class="dir" on:click="open(item)"><i class="icon">&#x25B8;</i> {{item.name}} <span>Open folder</span></div>
+            {{/if}}
+        {{/if}}
+    {{/each}}
+</ul>
+
+<script>
+    export default {
+        onrender () {
+            console.log('tree', this.get('tree'))
+        },
+        data () {
+            return {}
+        },
+        helpers: {
+            formatSize: window.GenericHelpers.formatSize
+        },
+        components: {
+            TorrentTreeComponent
+        },
+        methods: {
+            editIsOpened: function (item, value) {
+                var tree = this.get('tree')
+                for (var i = 0; i < tree.length; i++) {
+                    if (tree[i] === item) {
+                        tree[i].isOpened = value
+                    }
+                }
+                this.set({ tree: tree })
+            },
+            open: function (item) {
+                this.editIsOpened(item, true)
+            },
+            close: function (item) {
+                this.editIsOpened(item, false)
+            }
+        }
+    }
+</script>

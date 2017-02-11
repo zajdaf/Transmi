@@ -2,35 +2,8 @@
 html, body {
     margin: 0;
     padding: 0;
-    color: #2c3e50;
-    background: #ecf0f1;
-    background: linear-gradient(270deg, #c2e0f3, #bef2d4);
-    background-size: 400% 400%;
-    -webkit-animation: AnimationGeneralBackground 4s ease infinite;
-    -moz-animation: AnimationGeneralBackground 4s ease infinite;
-    -o-animation: AnimationGeneralBackground 4s ease infinite;
-    animation: AnimationGeneralBackground 4s ease infinite;
-}
-
-@-webkit-keyframes AnimationGeneralBackground {
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-@-moz-keyframes AnimationGeneralBackground {
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-@-o-keyframes AnimationGeneralBackground {
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-@keyframes AnimationGeneralBackground {
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
+    color: #344563;
+    background: #eef2f5;
 }
 
 html, body, input, textarea {
@@ -38,12 +11,12 @@ html, body, input, textarea {
     font-size: 13px;
 }
 h1, h2, h3, h4, h5, h6 {
-    color: #2980b9;
+    color: #344563;
     margin: 0;
     padding: 7px;
 }
 a, a:link, a:visited, a:hover, a:active, a:focus {
-    color: #27ae60;
+    color: #e9545a;
     text-decoration: none;
 }
 a:hover, a:active, a:focus {
@@ -53,16 +26,19 @@ a.button, a.button:link, a.button:visited, a.button:hover, a.button:active, a.bu
     text-decoration: none;
     display: inline-block;
     border-radius: 3px;
-    background: #27ae60;
-    color: #ecf0f1;
+    background: #5db8f1;
+    color: #f9f9f9;
     border: 0;
-    padding: 4px 10px;
+    padding: 7px 20px;
     cursor: pointer;
     margin: 5px 2px;
     font-weight: bold;
+    box-shadow: 1px 1px 1px #9199ac;
+    text-transform: uppercase;
+    font-size: 12px;
 }
 a.button:hover, a.button:active, a.button:focus, button:hover, button:active, button:focus, button.active {
-    background: #2ecc71;
+    box-shadow: 1px 1px 1px #344563;
 }
 input, textarea {
     display: inline-block;
@@ -86,7 +62,7 @@ i.icon {
 }
 
 header.body {
-    background: #2980b9;
+    background: #344563;
     color: #ecf0f1;
     border-bottom: 1px solid #95a5a6;
 }
@@ -209,33 +185,40 @@ article.torrent-status-0:hover .progress span {
     background: rgba(41, 128, 185, 0.9);
 }
 
-section.tabs > nav {
-    float: left;
-    width: 200px;
+article.box {
+    background: white;
+    margin: 15px 10px;
+    padding: 10px;
+    border: 1px solid #e2e5ea;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px #e2e5ea;
 }
-section.tabs > nav > div {
-    border: 1px solid #bdc3c7;
-    padding: 20px 15px;
+
+article.box p > span {
+    margin: 0 5px;
+    display: inline-block;
+}
+
+.files > .dir {
+    background: #fafbfd;
+    border-top: 1px solid #dbdee3;
+    border-bottom: 1px solid #dbdee3;
+    padding: 5px;
+    padding-left: 10px;
     cursor: pointer;
-    font-weight: bold;
-    margin: 10px 0 10px 5px;
-    position: relative;
 }
-section.tabs > nav > div.selected, section.tabs > nav > div.default-selected {
-    background: #8e44ad;
-    color: #ecf0f1;
+.files > .files {
+    margin-left: 15px;
 }
-section.tabs > nav > div.selected:after, section.tabs > nav > div.default-selected:after {
-    content: '';
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    margin-top: -13px;
-    border-left: 0;
-    border-bottom: 13px solid transparent;
-    border-top: 13px solid transparent;
-    border-left: 10px solid #8e44ad;
+.files > a.file {
+    border-bottom: 1px solid #dbdee3;
+    padding: 4px;
+    padding-left: 10px;
+    display: block;
 }
-section.tabs > article.tab-content {
-    margin-left: 250px;
+.files span {
+    color: #c8cfd7;
+    display: inline-block;
+    margin-left: 15px;
+    font-size: 80%;
 }

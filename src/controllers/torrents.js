@@ -88,6 +88,9 @@ let torrentRouter = () => {
 		let user = db.get(req.user, {})
 		transmission.methods.torrents.fields = fields.detail
 		transmission.get([+req.params.id], (err, arg) => {
+			if (!err && !arg.torrents.length) {
+				err = 'Torrent not found'
+			}
 			if (!hasError(next, err)) {
 				arg.torrents[0].customData = user.customData || {}
 				res.json(arg.torrents)

@@ -4,9 +4,10 @@ html, body {
     padding: 0;
     color: #344563;
     background: #eef2f5;
+    min-width: 500px;
 }
 
-html, body, input, textarea {
+html, body, input, textarea, button {
     font-family: "Nunito", "Segoe UI", Helvetica, Arial, sans-serif, "Segoe UI Symbol";
     font-size: 13px;
 }
@@ -64,28 +65,58 @@ i.icon {
 header.body {
     background: #344563;
     color: #ecf0f1;
-    border-bottom: 1px solid #95a5a6;
 }
-header.body section article.general-stats {
+header.body article.general-stats {
     float: right;
-    padding: 5px;
+    line-height: 25px;
+    padding: 10px;
+    margin-right: 30px;
+    color: #c8cfd7;
+}
+header.body article.general-stats > span {
+    margin-right: 10px;
+    font-weight: bold;
+}
+header.body button {
+    line-height: 70px;
+    padding: 0;
+    margin: 0 20px;
+    background: none;
+    box-shadow: none;
+    vertical-align: top;
+    text-transform: initial;
+    font-size: 16px;
+    font-weight: normal;
+}
+header.body button:hover:after, header.body button:active:after, header.body button:focus:after, header.body button.active:after {
+    content: "";
+    border-bottom: 2px solid #5db8f1;
+    display: block;
+    caption-side: bottom;
+    position: relative;
+    margin-top: -25px;
+}
+header.body h1 {
+    color: #ecf0f1;
+    background: #5db8f1;
+    display: inline-block;
+    line-height: 70px;
+    padding: 0 30px;
+    vertical-align: top;
     margin-right: 20px;
 }
-header.body nav {
-    clear: both;
-    margin: 15px 5px 5px;
+@media screen and (max-width:650px) {
+    header.body {
+        text-align: center;
+    }
+    header.body h1 {
+        display: none;
+    }
 }
-header.body nav a {
-    border-radius: 5px;
-    padding: 3px 6px;
-    display: inline-block;
-}
-header.body nav a:hover, header.body nav a:active, header.body nav a:focus, header.body nav a.active {
-    background-color: #27ae60;
-    color: #ecf0f1;
-}
-header.body h1, header.body nav a {
-    color: #ecf0f1;
+@media screen and (max-width:900px) {
+    header.body article.general-stats {
+        display: none;
+    }
 }
 
 section.auth {
@@ -193,10 +224,17 @@ article.box {
     border-radius: 3px;
     box-shadow: 1px 1px 2px #e2e5ea;
 }
-
 article.box p > span {
     margin: 0 5px;
     display: inline-block;
+}
+article.box.loading {
+    text-align: center;
+}
+article.box.loading p {
+    margin: 5px 0 0;
+    color: #c8cfd7;
+    font-size: 12px;
 }
 
 .files > .dir {

@@ -80,9 +80,7 @@
 
     {{else}}
 
-        <article class="box">
-            <h3>Torrent loading...</h3>
-        </article>
+        <LoadingComponent />
 
     {{/if}}
 </section>
@@ -106,6 +104,7 @@
         },
         components: {
             HeaderComponent,
+            LoadingComponent,
             TorrentTreeComponent
         },
         methods: {

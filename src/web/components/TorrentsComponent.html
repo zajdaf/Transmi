@@ -1,22 +1,26 @@
 <HeaderComponent />
 
 <section class="body">
-    <section class="torrents">
-        {{#each torrents as torrent}}
-        <article class="torrent-preview torrent-status-{{torrent.status}}" on:click="openTorrent(torrent.id)">
-            <h3>{{torrent.name}}</h3>
-            <div class="stat">
-                {{formatStatus(torrent.status)}} -
-                {{formatSize(torrent.haveValid)}} of {{formatSize(torrent.sizeWhenDone)}} ({{torrent.percentDone*100}}%) -
-                Ratio {{torrent.uploadRatio}} -
-                {{#if torrent.eta >= 0 }}{{formatDuration(torrent.eta)}} remaining -{{/if}}
-                <i class="icon">&#8681;</i> {{formatSize(torrent.rateDownload)}}/s, <i class="icon">&#8679;</i> {{formatSize(torrent.rateUpload)}}/s</div>
-            <div class="progress"><span style="width: {{torrent.percentDone*100}}%">{{torrent.percentDone*100}}%</span></div>
-            {{#if torrent.errorString }}<div class="warn"><i class="icon">&#9888;</i> {{torrent.errorString}}</div>{{/if}}
-            {{#if torrent.errorServer }}<div class="warn"><i class="icon">&#9888;</i> {{torrent.errorServer}}</div>{{/if}}
-        </article>
-        {{/each}}
-    </section>
+    {{#if !loaded}}
+        <LoadingComponent />
+    {{else}}
+        <section class="torrents">
+            {{#each torrents as torrent}}
+            <article class="torrent-preview torrent-status-{{torrent.status}}" on:click="openTorrent(torrent.id)">
+                <h3>{{torrent.name}}</h3>
+                <div class="stat">
+                    {{formatStatus(torrent.status)}} -
+                    {{formatSize(torrent.haveValid)}} of {{formatSize(torrent.sizeWhenDone)}} ({{torrent.percentDone*100}}%) -
+                    Ratio {{torrent.uploadRatio}} -
+                    {{#if torrent.eta >= 0 }}{{formatDuration(torrent.eta)}} remaining -{{/if}}
+                    <i class="icon">&#8681;</i> {{formatSize(torrent.rateDownload)}}/s, <i class="icon">&#8679;</i> {{formatSize(torrent.rateUpload)}}/s</div>
+                <div class="progress"><span style="width: {{torrent.percentDone*100}}%">{{torrent.percentDone*100}}%</span></div>
+                {{#if torrent.errorString }}<div class="warn"><i class="icon">&#9888;</i> {{torrent.errorString}}</div>{{/if}}
+                {{#if torrent.errorServer }}<div class="warn"><i class="icon">&#9888;</i> {{torrent.errorServer}}</div>{{/if}}
+            </article>
+            {{/each}}
+        </section>
+    {{/if}}
 </section>
 
 <script>
@@ -27,7 +31,7 @@
                     for (var i = 0; i < response.data.length; i++) {
                         response.data[i].percentDone = Math.round(response.data[i].percentDone * 100) / 100
                     }
-                    this.set({ torrents: response.data })
+                    this.set({ loaded: true, torrents: response.data })
                 }.bind(this)).catch(function (error) {
                     console.error(error)
                 })
@@ -38,6 +42,7 @@
         },
         data () {
             return {
+                loaded: false,
                 torrents: []
             }
         },
@@ -47,7 +52,8 @@
             formatDuration: window.GenericHelpers.formatDuration
         },
         components: {
-            HeaderComponent
+            HeaderComponent,
+            LoadingComponent
         },
         methods: {
             openTorrent: function (torrentId) {

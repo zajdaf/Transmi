@@ -7,7 +7,7 @@ const torrentsRoutes = require('./controllers/torrents')
 
 let app = express()
 
-app.use(bodyParser.json())
+app.use(bodyParser.json({limit: '10mb'}))
 
 app.use((req, res, next) => {
 	console.info(`[web.component] ${req.method} ${req.originalUrl} from ${req.ip}`)
@@ -15,18 +15,18 @@ app.use((req, res, next) => {
 })
 
 app.use("/api/auth", authRoutes())
-app.use("/api", (req, res, next) =>
-{
-	if (req.headers.authorization)
-	{
+app.use("/api", (req, res, next) => {
+	if (req.headers.authorization) {
 		req.user = authKeys.get(req.headers.authorization)
-		if (req.user)
+		if (req.user) {
 			return next()
+		}
 	}
 	let err = new Error("Authentification failed")
 	err.status = 403
 	next(err)
 })
+
 app.use("/api/torrents", torrentsRoutes())
 
 app.use(express.static('src/web/public'))
@@ -37,7 +37,6 @@ app.use((err, req, res, next) => {
 	console.error(err.stack)
 })
 
-app.listen(7897, function ()
-{
+app.listen(7897, () => {
 	console.info("[web-component]", "server running on port", 7897)
 })

@@ -49,7 +49,6 @@
                 if (!name || !password) {
                     this.set({ error: 'You must provide a name and a password.' })
                 } else {
-                    this.set({ error: 'Connection in progress...' })
                     window.app.api.post('/auth', {
                         name: name,
                         password: password

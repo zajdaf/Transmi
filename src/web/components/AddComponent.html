@@ -42,6 +42,7 @@
                 }
                 this.uploadFile(event.target.files[0]).then(function (response) {
                     console.log('res', response)
+                    window.app.router.go('torrents')
                 }).catch(function (error) {
                     this.set({ error: error })
                 }.bind(this))

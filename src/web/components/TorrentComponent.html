@@ -6,6 +6,10 @@
         <article class="box">
             <h2>{{torrent.name}}</h2>
 
+            {{#if error}}
+                <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
+            {{/if}}
+
             <p>{{formatStatus(torrent.status)}} <span>-</span> {{formatSize(torrent.haveValid)}} of {{formatSize(torrent.totalSize)}} ({{torrent.percentDone*100}}%) <span>-</span> Ratio {{torrent.uploadRatio}}</p>
 
             {{#if torrent.status == 0}}
@@ -13,8 +17,9 @@
             {{else}}
                 <button on:click="pause()">Pause</button>
             {{/if}}
-            <button>Delete</button>
-            <button>Make an archive</button>
+            <button on:click="delete()">Delete</button>
+            <button on:click="zip()">Make an archive</button>
+            <button on:click="updateInfos()">Refresh information</button>
         </article>
 
         <article class="box">
@@ -93,6 +98,7 @@
         data () {
             return {
                 showInformation: false,
+                error: null,
                 torrent: {}
             }
         },
@@ -111,7 +117,7 @@
             openTorrent: function (torrentId) {
                 window.app.router.go('torrent', { torrentId: torrentId })
             },
-            updateInfos () {
+            updateInfos: function () {
                 var torrentId = this.get('torrentId')
                 window.app.api.get('/torrents/' + torrentId).then(function (response) {
                     if (response.data.length) {
@@ -155,7 +161,6 @@
                                 for (var i = 0; i < keys.length; i++) {
                                     items.push(treeToArrays(item.childs[keys[i]], keys[i]))
                                 }
-                                console.log('=', item.childs, keys, items)
 
                                 if (item.type === 'dir') {
                                     item.name = name
@@ -166,11 +171,9 @@
                                 return items
                             }
 
-                            console.log('tree0', tree)
                             response.data[0].files = treeToArrays(tree)
                         }
 
-                        console.log('torrent', response.data[0])
                         this.set({ torrent: response.data[0] })
                     } else {
                         console.warn('torrent not found', torrentId, response.data)
@@ -178,7 +181,35 @@
                     }
                 }.bind(this)).catch(function (error) {
                     console.error(error)
+                    this.set({ error: error })
                 })
+            },
+            resume: function () {
+                window.app.api.put('/torrents/' + this.get('torrentId') + '/resume').then(function (res) {
+                    console.log('resume res', res)
+                    this.updateInfos()
+                }.bind(this)).catch(function (error) {
+                    console.error(error)
+                    this.set({ error: error })
+                }.bind(this))
+            },
+            pause: function () {
+                window.app.api.put('/torrents/' + this.get('torrentId') + '/pause').then(function (res) {
+                    console.log('pause res', res)
+                    this.updateInfos()
+                }.bind(this)).catch(function (error) {
+                    console.error(error)
+                    this.set({ error: error })
+                }.bind(this))
+            },
+            delete: function () {
+                window.app.api.delete('/torrents/' + this.get('torrentId')).then(function (res) {
+                    console.log('delete res', res)
+                    this.updateInfos()
+                }.bind(this)).catch(function (error) {
+                    console.error(error)
+                    this.set({ error: error })
+                }.bind(this))
             }
         }
     }

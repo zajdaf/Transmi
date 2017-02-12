@@ -29,6 +29,8 @@ let torrentRouter = () => {
 	}
 
 	let getUserFromTorrent = (torrentId) => {
+		let users = db.keys()
+
 		for (let index in users) {
 			let ids = db.get(users[index], {}).ids || []
 			if (ids.indexOf(+torrentId) != -1) {
@@ -96,8 +98,6 @@ let torrentRouter = () => {
 	})
 
 	router.get("/activity", (req, res, next) => {
-		let users = db.keys()
-
 		transmission.methods.torrents.fields = fields.stat
 		transmission.get((err, arg) => {
 			if (!hasError(next, err)) {

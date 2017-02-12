@@ -27,8 +27,14 @@
                     <button on:click="zipTorrent()">Make an archive</button>
                 {{/if}}
             {{/if}}
-            <button on:click="updateInfos()">Refresh information</button>
+            <button on:click="forceResumeTorrent()">Force resume</button>
         </article>
+
+        {{#if torrent.files}}
+            <article class="box">
+                <TorrentTreeComponent tree="{{torrent.files}}"/>
+            </article>
+        {{/if}}
 
         <article class="box">
             {{#if !showInformation}}
@@ -84,12 +90,6 @@
                 {{/if}}
             {{/if}}
         </article>
-
-        {{#if torrent.files}}
-            <article class="box">
-                <TorrentTreeComponent tree="{{torrent.files}}"/>
-            </article>
-        {{/if}}
 
     {{else}}
 
@@ -211,6 +211,16 @@
             resumeTorrent: function () {
                 window.app.api.put('/torrents/' + this.get('torrentId') + '/resume').then(function (res) {
                     console.log('resume res', res)
+                    this.updateInfos()
+                    this.setRefreshTimeout()
+                }.bind(this)).catch(function (error) {
+                    console.error(error)
+                    this.set({ error: error })
+                }.bind(this))
+            },
+            forceResumeTorrent: function () {
+                window.app.api.put('/torrents/' + this.get('torrentId') + '/force_resume').then(function (res) {
+                    console.log('force_resume res', res)
                     this.updateInfos()
                     this.setRefreshTimeout()
                 }.bind(this)).catch(function (error) {

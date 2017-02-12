@@ -210,28 +210,28 @@ article.torrent-status-0 .progress {
     background: rgba(41, 128, 185, 0.2);
 }
 article.torrent-status-3 .progress span, article.torrent-status-4 .progress span {
-    background: rgba(241, 196, 15, 0.7);
-}
-article.torrent-status-5 .progress span, article.torrent-status-6 .progress span {
-    background: rgba(39, 174, 96, 0.7);
-}
-article.torrent-status-1 .progress span, article.torrent-status-2 .progress span, article.torrent-status-7 .progress span {
-    background: rgba(192, 57, 43, 0.7);
-}
-article.torrent-status-0 .progress span {
-    background: rgba(41, 128, 185, 0.7);
-}
-article.torrent-status-3:hover .progress span, article.torrent-status-4:hover .progress span {
     background: rgba(241, 196, 15, 0.9);
 }
-article.torrent-status-5:hover .progress span, article.torrent-status-6:hover .progress span {
+article.torrent-status-5 .progress span, article.torrent-status-6 .progress span {
     background: rgba(39, 174, 96, 0.9);
 }
-article.torrent-status-1:hover .progress span, article.torrent-status-2:hover .progress span, article.torrent-status-7:hover .progress span {
+article.torrent-status-1 .progress span, article.torrent-status-2 .progress span, article.torrent-status-7 .progress span {
     background: rgba(192, 57, 43, 0.9);
 }
-article.torrent-status-0:hover .progress span {
+article.torrent-status-0 .progress span {
     background: rgba(41, 128, 185, 0.9);
+}
+article.torrent-status-3:hover .progress span, article.torrent-status-4:hover .progress span {
+    background: rgba(241, 196, 15, 1);
+}
+article.torrent-status-5:hover .progress span, article.torrent-status-6:hover .progress span {
+    background: rgba(39, 174, 96, 1);
+}
+article.torrent-status-1:hover .progress span, article.torrent-status-2:hover .progress span, article.torrent-status-7:hover .progress span {
+    background: rgba(192, 57, 43, 1);
+}
+article.torrent-status-0:hover .progress span {
+    background: rgba(41, 128, 185, 1);
 }
 
 article.box {
@@ -266,7 +266,7 @@ article.box.loading p {
     cursor: pointer;
 }
 .files > .files {
-    margin-left: 15px;
+    margin-left: 22px;
 }
 .files > .file {
     border-bottom: 1px solid #dbdee3;

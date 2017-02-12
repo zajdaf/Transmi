@@ -4,10 +4,10 @@
             <a href="{{item.url}}" class="file">{{item.name}}<span>{{formatSize(item.completed)}} of {{formatSize(item.total)}}</span></a>
         {{else}}
             {{#if item.isOpened}}
-                <div class="dir action" on:click="close(item)"><i class="icon">&#x25BE;</i> {{item.name}} <span>Close folder</span></div>
+                <div class="dir action" on:click="close(item)"><i class="icon">📂</i> {{item.name}}</div>
                 <TorrentTreeComponent tree="{{item.childs}}"/>
             {{else}}
-                <div class="dir action" on:click="open(item)"><i class="icon">&#x25B8;</i> {{item.name}} <span>Open folder</span></div>
+                <div class="dir action" on:click="open(item)"><i class="icon">📁</i> {{item.name}}</div>
             {{/if}}
         {{/if}}
     {{/each}}

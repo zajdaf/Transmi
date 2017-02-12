@@ -28,6 +28,17 @@ let torrentRouter = () => {
 		return false
 	}
 
+	let getUserFromTorrent = (torrentId) => {
+		for (let index in users) {
+			let ids = db.get(users[index], {}).ids || []
+			if (ids.indexOf(+torrentId) != -1) {
+				return users[index]
+			}
+		}
+
+		return null
+	}
+
 	router.get("/", (req, res, next) => {
 		let ids = db.get(req.user, {}).ids || []
 		transmission.methods.torrents.fields = fields.general
@@ -107,14 +118,7 @@ let torrentRouter = () => {
 						return data
 					}
 
-					for (let index in users) {
-						let ids = db.get(users[index], {}).ids || []
-						if (ids.indexOf(torrentId) != -1) {
-							return statUser(users[index])
-						}
-					}
-
-					return statUser('ghost')
+					return statUser(getUserFromTorrent(torrentId) || 'ghost')
 				}
 
 				for (let index in arg.torrents) {
@@ -141,13 +145,13 @@ let torrentRouter = () => {
 	})
 
 	router.get("/:id", (req, res, next) => {
-		let user = db.get(req.user, {})
 		transmission.methods.torrents.fields = fields.detail
 		transmission.get([+req.params.id], (err, arg) => {
 			if (!err && !arg.torrents.length) {
 				err = 'Torrent not found'
 			}
 			if (!hasError(next, err)) {
+				let user = db.get(getUserFromTorrent(+req.params.id), {})
 				arg.torrents[0].customData = {}
 				if (user.customData && user.customData[+req.params.id]) {
 					arg.torrents[0].customData = user.customData[+req.params.id]
@@ -230,6 +234,14 @@ let torrentRouter = () => {
 
 	router.put("/:id/resume", (req, res, next) => {
 		transmission.start([+req.params.id], (err, arg) => {
+			if (!hasError(next, err)) {
+				res.json({})
+			}
+		})
+	})
+
+	router.put("/:id/force_resume", (req, res, next) => {
+		transmission.startNow([+req.params.id], (err, arg) => {
 			if (!hasError(next, err)) {
 				res.json({})
 			}

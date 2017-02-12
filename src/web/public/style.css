@@ -41,6 +41,11 @@ a.button, a.button:link, a.button:visited, a.button:hover, a.button:active, a.bu
 a.button:hover, a.button:active, a.button:focus, button:hover, button:active, button:focus, button.active {
     box-shadow: 1px 1px 1px #344563;
 }
+a.button[disabled], button[disabled] {
+    cursor: default;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
 input, textarea {
     display: inline-block;
     width: calc(100% - 30px);

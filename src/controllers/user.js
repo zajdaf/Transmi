@@ -19,6 +19,7 @@ let userRouter = () => {
 		{
 			usr.password = crypto.createHash("sha1").update(req.body.password).digest("hex")
 			db.set(req.user, usr)
+			res.json({})
 		}
 		else
 			next(new Error("Invalid name"))

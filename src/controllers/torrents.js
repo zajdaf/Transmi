@@ -17,7 +17,7 @@ let torrentRouter = () => {
 			'eta', 'files', 'hashString', 'haveUnchecked', 'haveValid', 'id', 'isFinished', 'name',
 			'peersConnected', 'peersGettingFromUs', 'peersSendingToUs', 'percentDone', 'pieceCount',
 			'rateDownload', 'rateUpload', 'sizeWhenDone', 'status', 'totalSize', 'trackerStats', 'uploadRatio'],
-		stat: ["rateDownload", "rateUpload", "sizeWhenDone"]
+		stat: ['id', 'name', 'rateDownload', 'rateUpload', 'sizeWhenDone']
 	}
 
 	let hasError = (next, err) => {
@@ -44,7 +44,8 @@ let torrentRouter = () => {
 		transmission.active((err, arg) => {
 			if (!hasError(next, err)) {
 				let user_torrents = []
-				for (t in arg.torrents) {
+				for (let index in arg.torrents) {
+					let t = arg.torrents[index]
 					if (ids.indexOf(+t.id) != -1) {
 						user_torrents.push(t)
 					}
@@ -54,34 +55,89 @@ let torrentRouter = () => {
 		})
 	})
 
-	router.get("/details", (req, res, next) => {
-		transmission.session((err, arg) => {
+	router.get("/stats", (req, res, next) => {
+		let ids = db.get(req.user, {}).ids || []
+		transmission.methods.torrents.fields = fields.stat
+		transmission.get((err, arg) => {
 			if (!hasError(next, err)) {
-				res.json(arg)
+				let stats = {
+					all: {
+						download: 0,
+						upload: 0
+					},
+					you: {
+						download: 0,
+						upload: 0
+					}
+				}
+				for (let index in arg.torrents) {
+					let t = arg.torrents[index]
+					stats.all.download += t.rateDownload
+					stats.all.upload += t.rateUpload
+					if (ids.indexOf(+t.id) != -1) {
+						stats.you.download += t.rateDownload
+						stats.you.upload += t.rateUpload
+					}
+				}
+				res.json(stats)
 			}
 		})
 	})
 
-	router.get("/usersstats", (req, res, next) => {
-		let result = {}
-		for (var prop in config.users) {
-			if (config.users.hasOwnProperty(prop)) {
-				result[prop] = {}
-				result[prop]["rateDownload"] = 0
-				result[prop]["rateUpload"] = 0
-				result[prop]["sizeWhenDone"] = 0
-				transmission.methods.torrents.fields = fields.stat
-				transmission.get(db.get(prop, {}).ids || [], (err, arg) => {
-					if (!hasError(next, err)) { // TODO
-						for (t in arg.torrents) {
-							result[prop]["rateDownload"] += t.rateDownload
-							result[prop]["rateUpload"] += t.rateUpload
-							result[prop]["sizeWhenDone"] += t.sizeWhenDone
+	router.get("/activity", (req, res, next) => {
+		let users = db.keys()
+
+		transmission.methods.torrents.fields = fields.stat
+		transmission.get((err, arg) => {
+			if (!hasError(next, err)) {
+				let stats = {
+					all: { download: 0, upload: 0, size: 0, number: 0 },
+					users: []
+				}
+
+				let getUserStat = (stats, torrentId) => {
+					let statUser = (user) => {
+						for (let index in stats.users) {
+							if (stats.users[index].name === user) {
+								return stats.users[index]
+							}
+						}
+						let data = { name: user, download: 0, upload: 0, size: 0, number: 0, torrents: [] }
+						stats.users.push(data)
+						return data
+					}
+
+					for (let index in users) {
+						let ids = db.get(users[index], {}).ids || []
+						if (ids.indexOf(torrentId) != -1) {
+							return statUser(users[index])
 						}
 					}
-				})
+
+					return statUser('ghost')
+				}
+
+				for (let index in arg.torrents) {
+					let t = arg.torrents[index]
+					t.rateDownload = t.rateDownload || 0
+					t.rateUpload = t.rateUpload || 0
+					t.sizeWhenDone = t.sizeWhenDone || 0
+					stats.all.download += t.rateDownload
+					stats.all.upload += t.rateUpload
+					stats.all.size += t.sizeWhenDone
+					stats.all.number += 1
+
+					let user = getUserStat(stats, +t.id)
+					user.download += t.rateDownload
+					user.upload += t.rateUpload
+					user.size += t.sizeWhenDone
+					user.number += 1
+					user.torrents.push({ id: +t.id, name: t.name, size: t.sizeWhenDone, download: t.rateDownload, upload: t.rateUpload })
+				}
+
+				res.json(stats)
 			}
-		}
+		})
 	})
 
 	router.get("/:id", (req, res, next) => {
@@ -141,6 +197,9 @@ let torrentRouter = () => {
 					target = config.downloads_directory + user.customData[+req.params.id].downloadPath
 				}
 				if (target && target.length > 20) { // avoid accidental removal of '/'
+					if (user.customData[+req.params.id].zipFile && user.customData[+req.params.id].zipFile.length > 20) {
+						target += ' ' + config.downloads_directory + user.customData[+req.params.id].zipFile
+					}
 					const child = exec("rm -r " + target, (error, stdout, stderr) => {
 						console.log(`stdout: ${stdout}`)
 						console.log(`stderr: ${stderr}`)
@@ -184,17 +243,20 @@ let torrentRouter = () => {
 		}
 		user.customData[+req.params.id].zipProcessing = true
 		db.set(req.user, user)
-		let target = config.downloads_directory + user.customData[+req.params.id].downloadPath
-		const child = exec("cd " + target + " && zip -r "+ "ziperino.zip .", (error, stdout, stderr) => {
+		let directory = config.downloads_directory + user.customData[+req.params.id].downloadPath
+		let zipFile = 'archives/' + user.customData[+req.params.id].downloadPath.replace('/', '-') + '.zip'
+		let target = config.downloads_directory + zipFile
+		const child = exec(`cd ${directory} && zip -r ${target} .`, (error, stdout, stderr) => {
 			user.customData[req.params.id].zipProcessing = false
+			user.customData[req.params.id].zipFile = zipFile
 			db.set(req.user, user)
 			console.log(`stdout: ${stdout}`)
 			console.log(`stderr: ${stderr}`)
 			if (error !== null) {
 				console.log(`exec error: ${error}`)
 			}
-			res.json({})
 		})
+		res.json({})
 	})
 
 	return router

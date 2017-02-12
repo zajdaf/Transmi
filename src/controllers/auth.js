@@ -26,6 +26,7 @@ let authRouter = () => {
 	{
 		userkey = authKeys.get(req.headers.authorization)
 		authKeys.del(userkey)
+		res.json({})
 	})
 
 	return router

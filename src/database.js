@@ -16,6 +16,14 @@ class Database {
         return this.db[key] !== undefined
     }
 
+    all () {
+        return this.db
+    }
+
+    keys () {
+        return Object.keys(this.db)
+    }
+
     get (key, defaultValue) {
         if (key) {
             if (this.has(key)) {

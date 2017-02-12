@@ -1,0 +1,59 @@
+<HeaderComponent />
+
+<section class="body">
+    <article class="box">
+        <h2>Edit password</h2>
+        {{#if error}}
+            <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
+        {{/if}}
+        <input type="password" placeholder="Password" bind:value="password" on:keyEnter="connect()">
+        <button on:click="editPassword()">Edit</button>
+    </article>
+
+    <article class="box">
+        <h2>Logout</h2>
+        <button on:click="logout()">Logout</button>
+    </article>
+</section>
+
+<script>
+    export default {
+        onrender () {
+        },
+        data () {
+            return {
+                error: null,
+                password: ""
+            }
+        },
+        helpers: {
+        },
+        components: {
+            HeaderComponent
+        },
+        methods: {
+            editPassword: function () {
+                var password = this.get('password')
+                if (!password) {
+                    this.set({ error: 'You must provide a password.' })
+                } else {
+                    window.app.api.put('/user', {
+                        password: password
+                    }).then(function (response) {
+                        window.app.router.go('torrents')
+                    }).catch(function (error) {
+                        this.set({ error: error })
+                    }.bind(this))
+                }
+            },
+            logout: function () {
+                window.app.api.delete('/auth').then(function (response) {
+                    window.app.api.setApiKey(null)
+                    window.app.router.go('auth')
+                }).catch(function (error) {
+                    this.set({ error: error })
+                }.bind(this))
+            }
+        }
+    }
+</script>

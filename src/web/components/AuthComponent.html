@@ -31,7 +31,7 @@
                 var self = this
                 function onkeyup(e) {
                     if (e.which === 13 || e.keyCode === 13) {
-                        callback(event)
+                        callback(e)
                     }
                 }
                 node.addEventListener('keyup', onkeyup, false)

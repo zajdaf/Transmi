@@ -71,7 +71,7 @@ let torrentRouter = () => {
 				result[prop]["rateUpload"] = 0
 				result[prop]["sizeWhenDone"] = 0
 				transmission.methods.torrents.fields = fields.stat
-				transmission.get(db.get(prop).ids || [], (err, arg) => {
+				transmission.get(db.get(prop, {}).ids || [], (err, arg) => {
 					if (!hasError(next, err)) { // TODO
 						for (t in arg.torrents) {
 							result[prop]["rateDownload"] += t.rateDownload
@@ -92,8 +92,11 @@ let torrentRouter = () => {
 				err = 'Torrent not found'
 			}
 			if (!hasError(next, err)) {
-				arg.torrents[0].customData = user.customData || {}
-				res.json(arg.torrents)
+				arg.torrents[0].customData = {}
+				if (user.customData && user.customData[+req.params.id]) {
+					arg.torrents[0].customData = user.customData[+req.params.id]
+				}
+				res.json(arg.torrents[0])
 			}
 		})
 	})
@@ -131,7 +134,7 @@ let torrentRouter = () => {
 
 	router.delete("/:id", (req, res, next) => {
 		let user = db.get(req.user, {})
-		transmission.remove([req.params.id], true, (err, arg) => {
+		transmission.remove([+req.params.id], true, (err, arg) => {
 			if (!hasError(next, err)) {
 				let target = null
 				if (user.ids && user.ids.indexOf(+req.params.id) != -1 && user.customData && user.customData[+req.params.id] && user.customData[+req.params.id].downloadPath) {
@@ -159,7 +162,7 @@ let torrentRouter = () => {
 	})
 
 	router.put("/:id/pause", (req, res, next) => {
-		transmission.stop([req.params.id], (err, arg) => {
+		transmission.stop([+req.params.id], (err, arg) => {
 			if (!hasError(next, err)) {
 				res.json({})
 			}
@@ -167,7 +170,7 @@ let torrentRouter = () => {
 	})
 
 	router.put("/:id/resume", (req, res, next) => {
-		transmission.start([req.params.id], (err, arg) => {
+		transmission.start([+req.params.id], (err, arg) => {
 			if (!hasError(next, err)) {
 				res.json({})
 			}

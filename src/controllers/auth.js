@@ -1,22 +1,19 @@
 const express = require('express')
+const crypto = require('crypto')
 
-const config = require('../config')
 const authKeys = require('../authKeys')
+const database = require('../database')
 
 let authRouter = () => {
 	let router = express.Router()
+	let db = new database("db-data.json")
 
-	router.get("/", (req, res, next) =>
-	{
-		if (config.users[req.user] && config.users[req.user].password == req.password)
-			res.json("gg")
-		else
-			res.json(Math.random().toString(36).substring(2, 22) + Math.random().toString(36).substring(2, 22))
-	})
 	router.post("/", (req, res, next) =>
 	{
-		console.log(req.body.name, req.body.password)
-		if (config.users[req.body.name] && config.users[req.body.name].password == req.body.password)
+/*		console.log(req.body.name, req.body.password)*/
+		var hashed = crypto.createHash("sha1").update(req.body.password).digest("hex")
+		let usr = db.get(req.body.name, {})
+		if (usr && usr.password == hashed)
 		{
 			key = Math.random().toString(36).substring(2, 22) + Math.random().toString(36).substring(2, 22)
 			authKeys.set(key, req.body.name)
@@ -24,6 +21,11 @@ let authRouter = () => {
 		}
 		else
 			next(new Error("Invalid name/password"))
+	})
+	router.delete("/", (req, res, next) =>
+	{
+		userkey = authKeys.get(req.headers.authorization)
+		authKeys.del(userkey)
 	})
 
 	return router

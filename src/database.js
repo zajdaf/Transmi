@@ -7,6 +7,7 @@ class Database {
         try {
             this.db = require(this.filename)
         } catch(e) {
+            console.log(e)
             this.db = {}
         }
     }

@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 
 const authKeys = require('./authKeys')
 const authRoutes = require('./controllers/auth')
+const userRoutes = require('./controllers/user')
 const torrentsRoutes = require('./controllers/torrents')
 
 let app = express()
@@ -26,6 +27,7 @@ app.use("/api", (req, res, next) => {
 	err.status = 403
 	next(err)
 })
+app.use("/api/user", userRoutes())
 
 app.use("/api/torrents", torrentsRoutes())
 

@@ -10,3 +10,7 @@ module.exports.set = (apiKey, name) => {
 module.exports.get = (apiKey) => {
     return keys[apiKey] || null
 }
+
+module.exports.del = (apiKey) => {
+	delete keys[apiKey]
+}

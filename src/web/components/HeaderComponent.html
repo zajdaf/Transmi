@@ -1,7 +1,7 @@
 <header class="body">
-    <article class="general-stats">
-        <span>ALL:</span> <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s
-        <br><span>YOU:</span> <i class="icon">&#8681;</i> 410.0 kB/s, <i class="icon">&#8679;</i> 0.0 kB/s
+    <article class="general-stats" on:click="updateStats()">
+        <span>ALL:</span> <i class="icon">&#8681;</i> {{formatSize(all_download)}}/s, <i class="icon">&#8679;</i> {{formatSize(all_upload)}}/s
+        <br><span>YOU:</span> <i class="icon">&#8681;</i> {{formatSize(you_download)}}/s, <i class="icon">&#8679;</i> {{formatSize(you_upload)}}/s
     </article>
     <h1>transmi</h1>
     <button on:click="router('torrents')">Torrents</button>
@@ -13,11 +13,18 @@
 <script>
     export default {
         onrender () {
+            this.updateStats()
+            this.interval = setInterval(this.updateStats.bind(this), 10000)
         },
         onteardown () {
+            clearInterval(this.interval)
         },
         data () {
             return {
+                all_download: 0,
+                all_upload: 0,
+                you_download: 0,
+                you_upload: 0
             }
         },
         helpers: {
@@ -26,6 +33,18 @@
         methods: {
             router: function (location) {
                 window.app.router.go(location)
+            },
+            updateStats: function () {
+                window.app.api.get('/torrents/stats').then(function (response) {
+                    this.set({
+                        all_download: response.data.all.download,
+                        all_upload: response.data.all.upload,
+                        you_download: response.data.you.download,
+                        you_upload: response.data.you.upload
+                    })
+                }.bind(this)).catch(function (error) {
+                    console.error(error)
+                })
             }
         }
     }

@@ -21,7 +21,11 @@
             {{#if torrent.customData && torrent.customData.zipProcessing}}
                 <button disabled>Archive zip processing...</button>
             {{else}}
-                <button on:click="zipTorrent()">Make an archive</button>
+                {{#if torrent.customData && torrent.customData.zipFile}}
+                    <a class="button" href="/download/{{torrent.customData.zipFile}}">Download archive</button>
+                {{else}}
+                    <button on:click="zipTorrent()">Make an archive</button>
+                {{/if}}
             {{/if}}
             <button on:click="updateInfos()">Refresh information</button>
         </article>
@@ -133,7 +137,7 @@
                 window.app.api.get('/torrents/' + torrentId).then(function (response) {
                     response.data.percentDone = Math.round(response.data.percentDone * 100) / 100
 
-                    if (response.data.files) {
+                    if (response.data.files && response.data.customData && response.data.customData.downloadPath) {
                         var tree = {
                             type: 'root',
                             childs: {}
@@ -154,6 +158,7 @@
                             if (parts.length) {
                                 instance[parts[parts.length - 1]] = {
                                     type: 'file',
+                                    url: '/download/' + response.data.customData.downloadPath + '/' + response.data.files[i].name,
                                     completed: response.data.files[i].bytesCompleted,
                                     total: response.data.files[i].length
                                 }
@@ -226,6 +231,16 @@
             deleteTorrent: function () {
                 window.app.api.delete('/torrents/' + this.get('torrentId')).then(function (res) {
                     console.log('delete res', res)
+                    this.updateInfos()
+                    this.setRefreshTimeout()
+                }.bind(this)).catch(function (error) {
+                    console.error(error)
+                    this.set({ error: error })
+                }.bind(this))
+            },
+            zipTorrent: function () {
+                window.app.api.post('/torrents/' + this.get('torrentId') + '/zip').then(function (res) {
+                    console.log('zip res', res)
                     this.updateInfos()
                     this.setRefreshTimeout()
                 }.bind(this)).catch(function (error) {

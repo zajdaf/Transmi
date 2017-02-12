@@ -2,11 +2,20 @@
 
 <section class="body">
     <article class="box">
-        {{#if error}}
-            <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
+        {{#if errorFile}}
+            <div class="warn"><i class="icon">&#9888;</i> {{errorFile}}</div>
         {{/if}}
         <h2>Add torrent file</h2>
         <input type="file" on:change="onChange(event)">
+    </article>
+
+    <article class="box">
+        {{#if errorUrl}}
+            <div class="warn"><i class="icon">&#9888;</i> {{errorUrl}}</div>
+        {{/if}}
+        <h2>Add torrent url/magnet</h2>
+        <input type="text" placeholder="Url" bind:value="url" autofocus>
+        <button on:click="addUrl()">Add</button>
     </article>
 </section>
 
@@ -16,7 +25,9 @@
         },
         data () {
             return {
-                error: null
+                errorFile: null,
+                errorUrl: null,
+                url: ""
             }
         },
         helpers: {
@@ -44,8 +55,22 @@
                     console.log('res', response)
                     window.app.router.go('torrents')
                 }).catch(function (error) {
-                    this.set({ error: error })
+                    this.set({ errorFile: error })
                 }.bind(this))
+            },
+            addUrl: function (event) {
+                var url = this.get('url')
+                if (!url) {
+                    this.set({ errorUrl: 'You must provide an URL.' })
+                } else {
+                    window.app.api.post('/torrents', {
+                        url: url
+                    }).then(function (response) {
+                        window.app.router.go('torrents')
+                    }).catch(function (error) {
+                        this.set({ errorUrl: error })
+                    }.bind(this))
+                }
             }
         }
     }

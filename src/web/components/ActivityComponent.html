@@ -1,0 +1,59 @@
+<HeaderComponent />
+
+<section class="body">
+    {{#if !all}}
+        <LoadingComponent />
+    {{else}}
+        <article class="box">
+            <h2>General activity</h2>
+            <p>{{all.number}} torrents ({{formatSize(all.size)}}) <span>-</span> <i class="icon">&#8681;</i> {{formatSize(all.download)}}/s <span>-</span> <i class="icon">&#8679;</i> {{formatSize(all.upload)}}/s</p>
+        </article>
+
+        <article class="box">
+            <h2>Users</h2>
+            <div class="files">
+                {{#each users as user}}
+                    <div class="dir">
+                        {{user.name}}
+                        <span>{{user.number}} torrents ({{formatSize(user.size)}})</span>
+                        <span><i class="icon">&#8681;</i> {{formatSize(user.download)}}/s</span>
+                        <span><i class="icon">&#8679;</i> {{formatSize(user.upload)}}/s</span>
+                    </div>
+                    <div class="files">
+                        {{#each user.torrents as torrent}}
+                            <a href="#/torrents/{{torrent.id}}" class="file">
+                                {{torrent.name}}<span>{{formatSize(torrent.size)}}</span><span><i class="icon">&#8681;</i> {{formatSize(torrent.download)}}/s</span><span><i class="icon">&#8679;</i> {{formatSize(torrent.upload)}}/s</span>
+                            </a>
+                        {{/each}}
+                    </div>
+                {{/each}}
+            </div>
+        </article>
+    {{/if}}
+</section>
+
+<script>
+    export default {
+        onrender () {
+            window.app.api.get('/torrents/activity').then(function (response) {
+                console.log(response)
+                this.set({ all: response.data.all, users: response.data.users })
+            }.bind(this)).catch(function (error) {
+                console.error(error)
+            }.bind(this))
+        },
+        data () {
+            return {
+                all: null,
+                users: []
+            }
+        },
+        components: {
+            HeaderComponent,
+            LoadingComponent
+        },
+        helpers: {
+            formatSize: window.GenericHelpers.formatSize
+        }
+    }
+</script>

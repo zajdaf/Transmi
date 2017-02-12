@@ -16,6 +16,7 @@
     <script src='components/TorrentComponent.js'></script>
     <script src='components/AddComponent.js'></script>
     <script src='components/AccountComponent.js'></script>
+    <script src='components/ActivityComponent.js'></script>
     <script src='lib/axios-0.15.3.min.js'></script>
     <script src='lib/API.js'></script>
     <script src='lib/Router.js'></script>
@@ -27,6 +28,7 @@
         { name: 'torrents', path: '/torrents', component: TorrentsComponent, data: { torrentId: null } },
         { name: 'torrent', path: '/torrents/:torrentId', component: TorrentComponent },
         { name: 'add-torrent', path: '/add-torrent', component: AddComponent },
+        { name: 'activity', path: '/activity', component: ActivityComponent },
         { name: 'account', path: '/account', component: AccountComponent }
     ]
 

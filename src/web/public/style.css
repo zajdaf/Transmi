@@ -77,6 +77,7 @@ header.body article.general-stats {
     padding: 10px;
     margin-right: 30px;
     color: #c8cfd7;
+    cursor: pointer;
 }
 header.body article.general-stats > span {
     margin-right: 10px;
@@ -260,12 +261,14 @@ article.box.loading p {
     border-bottom: 1px solid #dbdee3;
     padding: 5px;
     padding-left: 10px;
+}
+.files > .action {
     cursor: pointer;
 }
 .files > .files {
     margin-left: 15px;
 }
-.files > a.file {
+.files > .file {
     border-bottom: 1px solid #dbdee3;
     padding: 4px;
     padding-left: 10px;

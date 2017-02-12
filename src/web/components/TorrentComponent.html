@@ -13,12 +13,12 @@
             <p>{{formatStatus(torrent.status)}} <span>-</span> {{formatSize(torrent.haveValid)}} of {{formatSize(torrent.totalSize)}} ({{torrent.percentDone*100}}%) <span>-</span> Ratio {{torrent.uploadRatio}}</p>
 
             {{#if torrent.status == 0}}
-                <button on:click="resume()">Resume</button>
+                <button on:click="resumeTorrent()">Resume</button>
             {{else}}
-                <button on:click="pause()">Pause</button>
+                <button on:click="pauseTorrent()">Pause</button>
             {{/if}}
-            <button on:click="delete()">Delete</button>
-            <button on:click="zip()">Make an archive</button>
+            <button on:click="deleteTorrent()">Delete</button>
+            <button on:click="zipTorrent()">Make an archive</button>
             <button on:click="updateInfos()">Refresh information</button>
         </article>
 
@@ -184,7 +184,7 @@
                     this.set({ error: error })
                 })
             },
-            resume: function () {
+            resumeTorrent: function () {
                 window.app.api.put('/torrents/' + this.get('torrentId') + '/resume').then(function (res) {
                     console.log('resume res', res)
                     this.updateInfos()
@@ -193,7 +193,7 @@
                     this.set({ error: error })
                 }.bind(this))
             },
-            pause: function () {
+            pauseTorrent: function () {
                 window.app.api.put('/torrents/' + this.get('torrentId') + '/pause').then(function (res) {
                     console.log('pause res', res)
                     this.updateInfos()
@@ -202,7 +202,7 @@
                     this.set({ error: error })
                 }.bind(this))
             },
-            delete: function () {
+            deleteTorrent: function () {
                 window.app.api.delete('/torrents/' + this.get('torrentId')).then(function (res) {
                     console.log('delete res', res)
                     this.updateInfos()

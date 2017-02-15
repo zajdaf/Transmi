@@ -262,6 +262,16 @@ article.box.loading p {
     padding: 5px;
     padding-left: 10px;
 }
+
+.files .icon {
+    margin-right: 10px;
+}
+
+.files img {
+    width: 15px;
+    height: 15px;
+}
+
 .files > .action {
     cursor: pointer;
 }

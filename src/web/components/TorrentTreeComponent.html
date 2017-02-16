@@ -1,13 +1,18 @@
 <div class="files">
     {{#each tree as item}}
         {{#if item.type == 'file'}}
-            <a href="{{item.url}}" class="file">{{item.name}}<span>{{formatSize(item.completed)}} of {{formatSize(item.total)}}</span></a>
+            <div class="file">
+                {{#if isIOSPlatform() && isVlcMedia(item) }}
+                    <a href="vlc://{{baseUrl}}{{item.url}}" class="icon"><img src="vlc-icon.png"></a>
+                {{/if}}
+                <a href="{{item.url}}" >{{item.name}}<span>{{formatSize(item.completed)}} of {{formatSize(item.total)}}</span></a>
+            </div>
         {{else}}
             {{#if item.isOpened}}
-                <div class="dir action" on:click="close(item)"><i class="icon">📂</i> {{item.name}}</div>
+                <div class="dir action" on:click="close(item)"><i class="icon">📂</i>{{item.name}}</div>
                 <TorrentTreeComponent tree="{{item.childs}}"/>
             {{else}}
-                <div class="dir action" on:click="open(item)"><i class="icon">📁</i> {{item.name}}</div>
+                <div class="dir action" on:click="open(item)"><i class="icon">📁</i>{{item.name}}</div>
             {{/if}}
         {{/if}}
     {{/each}}
@@ -19,10 +24,19 @@
             console.log('tree', this.get('tree'))
         },
         data () {
-            return {}
+            return {
+                baseUrl: window.location.origin
+            }
         },
         helpers: {
-            formatSize: window.GenericHelpers.formatSize
+            formatSize: window.GenericHelpers.formatSize,
+            isVlcMedia: function (item) {
+                var itemExtension = item.name.split(".").pop().toLowerCase();
+                return (["avi", "flv", "mkv", "mp4", "wav"].indexOf(itemExtension) != -1);
+            },
+            isIOSPlatform: function() {
+                return  !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+            }
         },
         components: {
             TorrentTreeComponent

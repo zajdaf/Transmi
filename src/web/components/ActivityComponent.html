@@ -13,19 +13,29 @@
             <h2>Users</h2>
             <div class="files">
                 {{#each users as user}}
-                    <div class="dir">
-                        {{user.name}}
-                        <span>{{user.number}} torrents ({{formatSize(user.size)}})</span>
-                        <span><i class="icon">&#8681;</i> {{formatSize(user.download)}}/s</span>
-                        <span><i class="icon">&#8679;</i> {{formatSize(user.upload)}}/s</span>
-                    </div>
-                    <div class="files">
-                        {{#each user.torrents as torrent}}
-                            <a href="#/torrents/{{torrent.id}}" class="file">
-                                {{torrent.name}}<span>{{formatSize(torrent.size)}}</span><span><i class="icon">&#8681;</i> {{formatSize(torrent.download)}}/s</span><span><i class="icon">&#8679;</i> {{formatSize(torrent.upload)}}/s</span>
-                            </a>
-                        {{/each}}
-                    </div>
+                    {{#if isClosed(user) }}
+                        <div class="dir action" on:click="open(user)">
+                            <i class="icon">📁</i>{{user.name}}
+                            <span>{{user.number}} torrents ({{formatSize(user.size)}})</span>
+                            <span><i class="icon">&#8681;</i> {{formatSize(user.download)}}/s</span>
+                            <span><i class="icon">&#8679;</i> {{formatSize(user.upload)}}/s</span>
+                        </div>
+                    {{else}}
+                        <div class="dir action" on:click="close(user)">
+                            <i class="icon">📂</i>{{user.name}}
+                            <span>{{user.number}} torrents ({{formatSize(user.size)}})</span>
+                            <span><i class="icon">&#8681;</i> {{formatSize(user.download)}}/s</span>
+                            <span><i class="icon">&#8679;</i> {{formatSize(user.upload)}}/s</span>
+                        </div>
+                        <div class="files">
+                            {{#each user.torrents as torrent}}
+                                <a href="#/torrents/{{torrent.id}}" class="file">
+                                    {{torrent.name}}<span>{{formatSize(torrent.size)}}</span><span><i class="icon">&#8681;</i> {{formatSize(torrent.download)}}/s</span><span><i class="icon">&#8679;</i> {{formatSize(torrent.upload)}}/s</span>
+                                </a>
+                            {{/each}}
+                        </div>
+                    {{/if}}
+
                 {{/each}}
             </div>
         </article>
@@ -53,7 +63,25 @@
             LoadingComponent
         },
         helpers: {
-            formatSize: window.GenericHelpers.formatSize
+            formatSize: window.GenericHelpers.formatSize,
+            isClosed: function(user) {
+                var displayedUsers = JSON.parse(localStorage.getItem('displayed_users')) || {}
+                return displayedUsers[user.name]
+            }
+        },
+        methods: {
+            editIsClosed: function (user, value) {
+                var displayedUsers = JSON.parse(localStorage.getItem('displayed_users')) || {}
+                displayedUsers[user.name] = value
+                localStorage.setItem('displayed_users', JSON.stringify(displayedUsers))
+                this.set({ users: this.get('users') })
+            },
+            open: function (user) {
+                this.editIsClosed(user, false)
+            },
+            close: function (user) {
+                this.editIsClosed(user, true)
+            }
         }
     }
 </script>

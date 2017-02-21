@@ -3,11 +3,21 @@
 <section class="body">
     <article class="box">
         <h2>Edit password</h2>
-        {{#if error}}
-            <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
+        {{#if errorPassword}}
+            <div class="warn"><i class="icon">&#9888;</i> {{errorPassword}}</div>
         {{/if}}
-        <input type="password" placeholder="Password" bind:value="password" on:keyEnter="connect()">
+        <input type="password" placeholder="Password" bind:value="password">
         <button on:click="editPassword()">Edit</button>
+    </article>
+
+    <article class="box">
+        <h2>Generate your T411 token (TTL 90 days)</h2>
+        {{#if errorT411}}
+            <div class="warn"><i class="icon">&#9888;</i> {{errorT411}}</div>
+        {{/if}}
+        <input type="text" placeholder="T411 username" bind:value="t411Username">
+        <input type="password" placeholder="T411 password" bind:value="t411Password">
+        <button on:click="t411Token()">Generate</button>
     </article>
 
     <article class="box">
@@ -22,8 +32,11 @@
         },
         data () {
             return {
-                error: null,
-                password: ""
+                errorPassword: null,
+                password: "",
+                errorT411: null,
+                t411Username: "",
+                t411Password: ""
             }
         },
         helpers: {
@@ -35,14 +48,14 @@
             editPassword: function () {
                 var password = this.get('password')
                 if (!password) {
-                    this.set({ error: 'You must provide a password.' })
+                    this.set({ errorPassword: 'You must provide a password.' })
                 } else {
                     window.app.api.put('/user', {
                         password: password
                     }).then(function (response) {
                         window.app.router.go('torrents')
                     }).catch(function (error) {
-                        this.set({ error: error })
+                        this.set({ errorPassword: error })
                     }.bind(this))
                 }
             },
@@ -51,7 +64,17 @@
                     window.app.api.setApiKey(null)
                     window.app.router.go('auth')
                 }).catch(function (error) {
-                    this.set({ error: error })
+                    this.set({ errorPassword: error })
+                }.bind(this))
+            },
+            t411Token: function () {
+                window.app.api.post('/t411/auth', {
+                    username: this.get('t411Username'),
+                    password: this.get('t411Password')
+                }).then(function (response) {
+                    window.app.router.go('add-torrent')
+                }).catch(function (error) {
+                    this.set({ errorT411: error })
                 }.bind(this))
             }
         }

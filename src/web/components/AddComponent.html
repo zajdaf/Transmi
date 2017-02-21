@@ -5,7 +5,7 @@
         {{#if errorFile}}
             <div class="warn"><i class="icon">&#9888;</i> {{errorFile}}</div>
         {{/if}}
-        <h2>Add torrent file</h2>
+        <h2>From file</h2>
         <input type="file" on:change="onChange(event)">
     </article>
 
@@ -13,9 +13,35 @@
         {{#if errorUrl}}
             <div class="warn"><i class="icon">&#9888;</i> {{errorUrl}}</div>
         {{/if}}
-        <h2>Add torrent url/magnet</h2>
-        <input type="text" placeholder="Url" bind:value="url" autofocus>
+        <h2>From url/magnet</h2>
+        <input type="text" placeholder="Url" bind:value="url" on:keyEnter="addUrl()">
         <button on:click="addUrl()">Add</button>
+    </article>
+
+    <article class="box">
+        {{#if errorT411}}
+            <div class="warn"><i class="icon">&#9888;</i> {{errorT411}}</div>
+        {{/if}}
+        <h2>From T411</h2>
+        <input type="text" placeholder="Search a torrent" bind:value="queryT411" on:keyEnter="searchT411()">
+        <button on:click="searchT411()">Search</button>
+        <table>
+            <thead>
+                <tr><th>Category</th><th>Name</th><th>Size</th><th>Seeders</th><th>Leechers</th><th>Download</th></tr>
+            </thead>
+            <tbody>
+                {{#each t411Results as torrent}}
+                    <tr>
+                        <td>{{torrent.categoryname}}</td>
+                        <td><a href="https://www.t411.li/t/{{torrent.id}}">{{torrent.name}}</a></td>
+                        <td>{{formatSize(torrent.size)}}</td>
+                        <td>{{torrent.seeders}}</td>
+                        <td>{{torrent.leechers}}</td>
+                        <td><button class="mini" on:click="downloadT411(torrent.id)">Download</button></td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
     </article>
 </section>
 
@@ -27,13 +53,33 @@
             return {
                 errorFile: null,
                 errorUrl: null,
-                url: ""
+                url: "",
+                errorT411: null,
+                queryT411: "",
+                t411Results: []
             }
         },
         helpers: {
+            formatSize: window.GenericHelpers.formatSize
         },
         components: {
             HeaderComponent
+        },
+        events: {
+            keyEnter (node, callback) {
+                var self = this
+                function onkeyup(e) {
+                    if (e.which === 13 || e.keyCode === 13) {
+                        callback(e)
+                    }
+                }
+                node.addEventListener('keyup', onkeyup, false)
+                return {
+                    teardown () {
+                        node.removeEventListener('keyup', onkeyup, false)
+                    }
+                }
+            }
         },
         methods: {
             uploadFile: function (filePath) {
@@ -44,7 +90,7 @@
                     }, false)
                     reader.readAsDataURL(filePath)
                 }).then(function (base64) {
-                    return window.app.api.post('/torrents', { base64: base64})
+                    return window.app.api.post('/torrents', { base64: base64 })
                 })
             },
             onChange: function (event) {
@@ -71,6 +117,24 @@
                         this.set({ errorUrl: error })
                     }.bind(this))
                 }
+            },
+            searchT411: function () {
+                window.app.api.post('/t411/search', {
+                    search: this.get('queryT411')
+                }).then(function (response) {
+                    this.set({ t411Results: response.data })
+                }.bind(this)).catch(function (error) {
+                    this.set({ errorT411: error })
+                }.bind(this))
+            },
+            downloadT411: function (torrentId) {
+                window.app.api.post('/t411/download/' + torrentId, {}).then(function (response) {
+                    return window.app.api.post('/torrents', { base64: response.data.base64 })
+                }).then(function (response) {
+                    window.app.router.go('torrents')
+                }.bind(this)).catch(function (error) {
+                    this.set({ errorT411: error })
+                }.bind(this))
             }
         }
     }

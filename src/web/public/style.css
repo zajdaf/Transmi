@@ -46,6 +46,11 @@ a.button[disabled], button[disabled] {
     cursor: not-allowed;
     opacity: 0.7;
 }
+a.button.mini, button.mini {
+    padding: 1px 10px;
+    margin: 0;
+    font-size: 11px;
+}
 input, textarea {
     display: inline-block;
     width: calc(100% - 30px);
@@ -53,6 +58,22 @@ input, textarea {
     border: 1px solid #bdc3c7;
     border-radius: 3px;
     margin: 7px 0;
+}
+table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+table tr td, table tr th {
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+table tr:hover td, table tr:hover th {
+    background-color: #f5f5f5;
+}
+table thead tr th {
+    border-bottom: 2px solid #ddd;
 }
 
 i.icon {

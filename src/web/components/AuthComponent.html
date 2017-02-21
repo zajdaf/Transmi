@@ -7,10 +7,10 @@
     {{#if error}}
         <div class="warn"><i class="icon">&#9888;</i> {{error}}</div>
     {{/if}}
-    <form>
-        <input type="text" placeholder="Name" bind:value="name" on:keyEnter="connect()" autofocus>
-        <input type="password" placeholder="Password" bind:value="password" on:keyEnter="connect()">
-        <button on:click="connect()">Connect</button>
+    <form on:submit="connect(event)">
+        <input type="text" placeholder="Name" bind:value="name" autofocus>
+        <input type="password" placeholder="Password" bind:value="password">
+        <button type="submit">Connect</button>
     </form>
 </section>
 
@@ -28,24 +28,9 @@
                 error: null
             }
         },
-        events: {
-            keyEnter (node, callback) {
-                var self = this
-                function onkeyup(e) {
-                    if (e.which === 13 || e.keyCode === 13) {
-                        callback(e)
-                    }
-                }
-                node.addEventListener('keyup', onkeyup, false)
-                return {
-                    teardown () {
-                        node.removeEventListener('keyup', onkeyup, false)
-                    }
-                }
-            }
-        },
         methods: {
-            connect: function () {
+            connect: function (event) {
+                event.preventDefault()
                 var name = this.get('name')
                 var password = this.get('password')
                 if (!name || !password) {

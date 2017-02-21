@@ -13,24 +13,22 @@
             <h2>Users</h2>
             <div class="files">
                 {{#each users as user}}
-                    {{#if isClosed(user) }}
-                        <div class="dir action" on:click="open(user)">
-                            <i class="icon">📁</i>{{user.name}}
-                            <span>{{user.number}} torrents ({{formatSize(user.size)}})</span>
-                            <span><i class="icon">&#8681;</i> {{formatSize(user.download)}}/s</span>
-                            <span><i class="icon">&#8679;</i> {{formatSize(user.upload)}}/s</span>
-                        </div>
-                    {{else}}
-                        <div class="dir action" on:click="close(user)">
-                            <i class="icon">📂</i>{{user.name}}
-                            <span>{{user.number}} torrents ({{formatSize(user.size)}})</span>
-                            <span><i class="icon">&#8681;</i> {{formatSize(user.download)}}/s</span>
-                            <span><i class="icon">&#8679;</i> {{formatSize(user.upload)}}/s</span>
-                        </div>
+                    <div class="dir action" on:click="toggleOpening(user)">
+                        <i class="icon"> {{#if user.isClosed }} 📁 {{else}} 📂 {{/if}} </i>
+                        {{user.name}}<span>{{user.number}} torrents ({{formatSize(user.size)}})</span><span><i class="icon">&#8681;</i> {{formatSize(user.download)}}/s</span><span><i class="icon">&#8679;</i> {{formatSize(user.upload)}}/s</span>
+                        {{#if user.containsNew}}<span class="hot"><i class="icon">🔥</i>NEW</span> {{/if}}
+                    </div>
+                    {{#if !user.isClosed}}
                         <div class="files">
                             {{#each user.torrents as torrent}}
                                 <a href="#/torrents/{{torrent.id}}" class="file">
-                                    {{torrent.name}}<span>{{formatSize(torrent.size)}}</span><span><i class="icon">&#8681;</i> {{formatSize(torrent.download)}}/s</span><span><i class="icon">&#8679;</i> {{formatSize(torrent.upload)}}/s</span>
+                                    {{torrent.name}}
+                                    <span>{{formatSize(torrent.size)}}</span>
+                                    <span><i class="icon">&#8681;</i> {{formatSize(torrent.download)}}/s</span>
+                                    <span><i class="icon">&#8679;</i> {{formatSize(torrent.upload)}}/s</span>
+                                    {{#if torrent.isNew}}
+                                        <span class="hot"><i class="icon">🔥</i>NEW</span>
+                                    {{/if}}
                                 </a>
                             {{/each}}
                         </div>
@@ -47,6 +45,19 @@
         onrender () {
             window.app.api.get('/torrents/activity').then(function (response) {
                 console.log(response)
+                var seenTorrents = JSON.parse(localStorage.getItem('seen_torrents')) || []
+                var displayedUsers = JSON.parse(localStorage.getItem('displayed_users')) || {}
+                for (var i in response.data.users) {
+                    var user = response.data.users[i]
+                    for (var j in user.torrents) {
+                        var torrent = user.torrents[j]
+                        torrent.isNew = !seenTorrents.includes(torrent.id)
+                    }
+                    user.containsNew = user.torrents.reduce(function(a, b) { return a || b.isNew }, false)
+                    user.isClosed = displayedUsers[user.name]
+                }
+                seenTorrents = response.data.users.reduce(function(a, b) { return a.concat(b.torrents) }, []).map(function(x) { return x.id })
+                localStorage.setItem('seen_torrents', JSON.stringify(seenTorrents))
                 this.set({ all: response.data.all, users: response.data.users })
             }.bind(this)).catch(function (error) {
                 console.error(error)
@@ -63,24 +74,15 @@
             LoadingComponent
         },
         helpers: {
-            formatSize: window.GenericHelpers.formatSize,
-            isClosed: function(user) {
-                var displayedUsers = JSON.parse(localStorage.getItem('displayed_users')) || {}
-                return displayedUsers[user.name]
-            }
+            formatSize: window.GenericHelpers.formatSize
         },
         methods: {
-            editIsClosed: function (user, value) {
+            toggleOpening: function (user) {
                 var displayedUsers = JSON.parse(localStorage.getItem('displayed_users')) || {}
-                displayedUsers[user.name] = value
+                user.isClosed = displayedUsers[user.name] === true ? false : true
+                displayedUsers[user.name] = user.isClosed
                 localStorage.setItem('displayed_users', JSON.stringify(displayedUsers))
                 this.set({ users: this.get('users') })
-            },
-            open: function (user) {
-                this.editIsClosed(user, false)
-            },
-            close: function (user) {
-                this.editIsClosed(user, true)
             }
         }
     }

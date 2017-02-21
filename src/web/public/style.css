@@ -290,3 +290,8 @@ article.box.loading p {
     margin-left: 15px;
     font-size: 80%;
 }
+
+.files .hot {
+    color: #f44336;
+    font-weight: bold;
+}

@@ -5,6 +5,7 @@ const authKeys = require('./authKeys')
 const authRoutes = require('./controllers/auth')
 const userRoutes = require('./controllers/user')
 const torrentsRoutes = require('./controllers/torrents')
+const t411Routes = require('./controllers/t411')
 
 let app = express()
 
@@ -30,6 +31,7 @@ app.use("/api", (req, res, next) => {
 app.use("/api/user", userRoutes())
 
 app.use("/api/torrents", torrentsRoutes())
+app.use("/api/t411", t411Routes())
 
 app.use(express.static('src/web/public'))
 

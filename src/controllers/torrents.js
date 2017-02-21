@@ -4,12 +4,11 @@ const exec = require('child_process').exec;
 
 const config = require('../config')
 const authKeys = require('../authKeys')
-const database = require('../database')
+const db = require('./db')
 
 let torrentRouter = () => {
 	let router = express.Router()
-	let transmission = new Transmission(config.transmission_options);
-	let db = new database("db-data.json")
+	let transmission = new Transmission(config.transmission_options)
 	let fields = {
 		general: ['error', 'errorString', 'eta', 'haveValid', 'id', 'name', 'percentDone', 'rateDownload',
 			'rateUpload', 'sizeWhenDone', 'status', 'uploadRatio'],

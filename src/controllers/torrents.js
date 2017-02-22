@@ -210,7 +210,9 @@ let torrentRouter = () => {
 							console.log(`exec error: ${error}`)
 						}
 						if (user.ids) {
-							user.ids.splice(user.ids.indexOf(req.params.id), 1)
+							if (user.ids.indexOf(+req.params.id) !== -1) {
+								user.ids.splice(user.ids.indexOf(+req.params.id), 1)
+							}
 							delete user.customData[+req.params.id]
 							db.set(req.user, user)
 						}
@@ -258,8 +260,8 @@ let torrentRouter = () => {
 		let zipFile = 'archives/' + user.customData[+req.params.id].downloadPath.replace('/', '-') + '.zip'
 		let target = config.downloads_directory + zipFile
 		const child = exec(`cd ${directory} && zip -r ${target} .`, (error, stdout, stderr) => {
-			user.customData[req.params.id].zipProcessing = false
-			user.customData[req.params.id].zipFile = zipFile
+			user.customData[+req.params.id].zipProcessing = false
+			user.customData[+req.params.id].zipFile = zipFile
 			db.set(req.user, user)
 			console.log(`stdout: ${stdout}`)
 			console.log(`stderr: ${stderr}`)

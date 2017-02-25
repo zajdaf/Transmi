@@ -78,6 +78,7 @@
                     this.set({ t411_profile: response.data, errorT411: null })
                     console.log("success", response)
                 }.bind(this)).catch(function (error) {
+                    this.set({ t411_profile: null, errorT411: null })
                     console.log(error)
                 }.bind(this))
             },
@@ -93,7 +94,7 @@
                     username: this.get('t411Username'),
                     password: this.get('t411Password')
                 }).then(function (response) {
-                    this.updateT411Profile()
+                    return this.updateT411Profile()
                 }.bind(this)).catch(function (error) {
                     this.set({ errorT411: error })
                 }.bind(this))
@@ -101,7 +102,7 @@
             t411Logout: function () {
                 window.app.api.delete('/t411/auth', {
                 }).then(function (response) {
-                    this.updateT411Profile()
+                    return this.updateT411Profile()
                 }.bind(this)).catch(function (error) {
                     this.set({ errorT411: error })
                 }.bind(this))

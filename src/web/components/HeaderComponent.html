@@ -70,6 +70,7 @@
                 window.app.api.get('/t411/profile/refresh').then(function (response) {
                     this.set({ t411_profile: response.data })
                 }.bind(this)).catch(function (error) {
+                    this.set({ t411_profile: null })
                     console.log(error)
                 }.bind(this))
             }

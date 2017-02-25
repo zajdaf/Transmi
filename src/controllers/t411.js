@@ -48,10 +48,10 @@ let torrentRouter = () => {
 	 * Update user profile from t411 and stores result in db
 	 */
 	router.get("/profile/refresh", (req, res, next) => {
-		let token = db.get(req.user, {}).t411.token || db.get(req.user, {}).t411Token || null
+		let token = db.get(req.user, {}).t411.token|| null
 		let uid = db.get(req.user, {}).t411.uid || null
 		if (!token || !uid) {
-			return res.json(null)
+			next(new Error('Token not found'))
 		}
 		request({
 			url: baseUrl + '/users/profile/' + uid,
@@ -88,7 +88,7 @@ let torrentRouter = () => {
 
 	router.post("/search", (req, res, next) => {
 		console.log(db.get(req.user, {}));
-		let token = db.get(req.user, {}).t411.token || db.get(req.user, {}).t411Token || null
+		let token = db.get(req.user, {}).t411.token || null
 		if (!token) {
 			next(new Error('Token not found'))
 		}
@@ -115,7 +115,7 @@ let torrentRouter = () => {
 	})
 
 	router.post("/download/:id", (req, res, next) => {
-		let token = db.get(req.user, {}).t411.token || db.get(req.user, {}).t411Token || null
+		let token = db.get(req.user, {}).t411.token || null
 		if (!token) {
 			next(new Error('Token not found'))
 		}

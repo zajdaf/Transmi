@@ -1,8 +1,19 @@
 <header class="body">
-    <article class="general-stats" on:click="updateStats()">
+    <article class="stats general" on:click="updateStats()">
         <span>ALL:</span> <i class="icon">&#8681;</i> {{formatSize(all_download)}}/s, <i class="icon">&#8679;</i> {{formatSize(all_upload)}}/s
         <br><span>YOU:</span> <i class="icon">&#8681;</i> {{formatSize(you_download)}}/s, <i class="icon">&#8679;</i> {{formatSize(you_upload)}}/s
     </article>
+    {{#if t411_profile}}
+        <article class="stats t411" on:click="updateT411Profile()">
+            <div class="avatar">
+                <img src="http://www.t411.li/images/default.png">
+            </div>
+            <div class="stats_container">
+                <b>{{t411_profile.username}}</b> ﹪ <b>{{Math.round(t411_profile.uploaded / t411_profile.downloaded * 100) / 100}}</b>
+                <br><i class="icon">&#8681;</i> {{formatSize(t411_profile.uploaded)}}, <i class="icon">&#8679;</i> {{formatSize(t411_profile.downloaded)}}
+            </div>
+        </article>
+    {{/if}}
     <h1>transmi</h1>
     <button on:click="router('torrents')">Torrents</button>
     <button on:click="router('add-torrent')">Add torrent</button>
@@ -14,6 +25,7 @@
     export default {
         onrender () {
             this.updateStats()
+            this.getT411Profile()
             this.interval = setInterval(this.updateStats.bind(this), 10000)
         },
         onteardown () {
@@ -24,7 +36,8 @@
                 all_download: 0,
                 all_upload: 0,
                 you_download: 0,
-                you_upload: 0
+                you_upload: 0,
+                t411_profile: null,
             }
         },
         helpers: {
@@ -45,6 +58,20 @@
                 }.bind(this)).catch(function (error) {
                     console.error(error)
                 })
+            },
+            getT411Profile: function () {
+                window.app.api.get('/t411/profile').then(function (response) {
+                    this.set({ t411_profile: response.data })
+                }.bind(this)).catch(function (error) {
+                    console.log(error)
+                }.bind(this))
+            },
+            updateT411Profile: function () {
+                window.app.api.get('/t411/profile/refresh').then(function (response) {
+                    this.set({ t411_profile: response.data })
+                }.bind(this)).catch(function (error) {
+                    console.log(error)
+                }.bind(this))
             }
         }
     }

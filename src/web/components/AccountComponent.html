@@ -11,13 +11,17 @@
     </article>
 
     <article class="box">
-        <h2>Generate your T411 token (TTL 90 days)</h2>
+        <h2>T411 account (expires after 90 days)</h2>
         {{#if errorT411}}
             <div class="warn"><i class="icon">&#9888;</i> {{errorT411}}</div>
         {{/if}}
-        <input type="text" placeholder="T411 username" bind:value="t411Username">
-        <input type="password" placeholder="T411 password" bind:value="t411Password">
-        <button on:click="t411Token()">Generate</button>
+        {{#if t411_profile}}
+            <button on:click="t411Logout()">Disconnect</button>
+        {{else}}
+            <input type="text" placeholder="T411 username" bind:value="t411Username">
+            <input type="password" placeholder="T411 password" bind:value="t411Password">
+            <button on:click="t411Login()">Generate</button>
+        {{/if}}
     </article>
 
     <article class="box">
@@ -29,6 +33,7 @@
 <script>
     export default {
         onrender () {
+            this.getT411Profile()
         },
         data () {
             return {
@@ -36,7 +41,8 @@
                 password: "",
                 errorT411: null,
                 t411Username: "",
-                t411Password: ""
+                t411Password: "",
+                t411_profile: null,
             }
         },
         helpers: {
@@ -67,13 +73,36 @@
                     this.set({ errorPassword: error })
                 }.bind(this))
             },
-            t411Token: function () {
+            updateT411Profile: function () {
+                window.app.api.get('/t411/profile/refresh').then(function (response) {
+                    this.set({ t411_profile: response.data, errorT411: null })
+                    console.log("success", response)
+                }.bind(this)).catch(function (error) {
+                    console.log(error)
+                }.bind(this))
+            },
+            getT411Profile: function () {
+                window.app.api.get('/t411/profile').then(function (response) {
+                    this.set({ t411_profile: response.data })
+                }.bind(this)).catch(function (error) {
+                    console.log(error)
+                }.bind(this))
+            },
+            t411Login: function () {
                 window.app.api.post('/t411/auth', {
                     username: this.get('t411Username'),
                     password: this.get('t411Password')
                 }).then(function (response) {
-                    window.app.router.go('add-torrent')
-                }).catch(function (error) {
+                    this.updateT411Profile()
+                }.bind(this)).catch(function (error) {
+                    this.set({ errorT411: error })
+                }.bind(this))
+            },
+            t411Logout: function () {
+                window.app.api.delete('/t411/auth', {
+                }).then(function (response) {
+                    this.updateT411Profile()
+                }.bind(this)).catch(function (error) {
                     this.set({ errorT411: error })
                 }.bind(this))
             }

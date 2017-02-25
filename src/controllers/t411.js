@@ -25,14 +25,70 @@ let torrentRouter = () => {
 				return next(new Error(`Authentification error (${json.code}): ${json.error}`))
 			}
 			let user = db.get(req.user, {})
-			user.t411Token = json.token
+			user.t411 = {
+				token: json.token,
+				uid: json.uid
+			}
 			db.set(req.user, user)
 			res.json({})
 		})
 	})
 
+	/*
+	 * Disconnect user from t411
+	 */
+	router.delete("/auth", (req, res, next) => {
+		let user = db.get(req.user, {})
+		user.t411 = {}
+		db.set(req.user, user)
+		res.json({})
+	})
+
+	/*
+	 * Update user profile from t411 and stores result in db
+	 */
+	router.get("/profile/refresh", (req, res, next) => {
+		let token = db.get(req.user, {}).t411.token || db.get(req.user, {}).t411Token || null
+		let uid = db.get(req.user, {}).t411.uid || null
+		if (!token || !uid) {
+			return res.json(null)
+		}
+		request({
+			url: baseUrl + '/users/profile/' + uid,
+			method: 'GET',
+			headers: {
+				Authorization: token
+			},
+			json: true
+		}, (error, response, json) => {
+			if (error) {
+				return next(new Error(error))
+			}
+			if (json.error || !json.username) {
+				return next(new Error(`Profile error (${json.code}): ${json.error}`))
+			}
+			let user = db.get(req.user, {})
+			user.t411.profile = json
+			db.set(req.user, user)
+			res.json(user.t411.profile)
+		})
+	})
+
+	/*
+	 * Returns last user profile stored in db
+	 */
+	router.get("/profile", (req, res, next) => {
+		let user = db.get(req.user, {})
+		if (user.t411 === undefined) {
+			res.json({})
+		} else {
+			res.json(user.t411.profile)
+		}
+	})
+
 	router.post("/search", (req, res, next) => {
-		let token = db.get(req.user, {}).t411Token || null
+		console.log(db.get(req.user, {}));
+		let token = db.get(req.user, {}).t411.token || db.get(req.user, {}).t411Token || null
 		if (!token) {
 			next(new Error('Token not found'))
 		}
@@ -59,7 +115,7 @@ let torrentRouter = () => {
 	})
 
 	router.post("/download/:id", (req, res, next) => {
-		let token = db.get(req.user, {}).t411Token || null
+		let token = db.get(req.user, {}).t411.token || db.get(req.user, {}).t411Token || null
 		if (!token) {
 			next(new Error('Token not found'))
 		}

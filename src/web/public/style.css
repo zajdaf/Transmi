@@ -169,7 +169,12 @@ header.body h2 {
     }
 }
 @media screen and (max-width:900px) {
-    header.body article.general-stats {
+    header.body article.stats {
+        display: none;
+    }
+}
+@media screen and (max-width:1100px) {
+    header.body article.stats.t411 {
         display: none;
     }
 }

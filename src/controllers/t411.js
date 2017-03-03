@@ -54,7 +54,7 @@ let torrentRouter = () => {
 		let token = (user.t411 || {}).token || null
 		let uid = (user.t411 || {}).uid || null
 		if (!token || !uid) {
-			next(new Error('T411 user not authenticated'))
+			return next(new Error('T411 user not authenticated'))
 		}
 		request({
 			url: baseUrl + '/users/profile/' + uid,
@@ -104,7 +104,7 @@ let torrentRouter = () => {
 		console.log(db.get(req.user, {}));
 		let token = (db.get(req.user, {}).t411 || {}).token || null
 		if (!token) {
-			next(new Error('T411 token not found'))
+			return next(new Error('T411 token not found'))
 		}
 		request({
 			url: baseUrl + '/torrents/search/' + encodeURIComponent(req.body.search) + '?limit=100',
@@ -131,7 +131,7 @@ let torrentRouter = () => {
 	router.post("/download/:id", (req, res, next) => {
 		let token = (db.get(req.user, {}).t411 || {}).token || null
 		if (!token) {
-			next(new Error('T411 token not found'))
+			return next(new Error('T411 token not found'))
 		}
 		request({
 			url: baseUrl + '/torrents/download/' + req.params.id,

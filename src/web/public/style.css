@@ -92,17 +92,37 @@ header.body {
     background: #344563;
     color: #ecf0f1;
 }
-header.body article.general-stats {
+header.body article.stats {
     float: right;
-    line-height: 25px;
-    padding: 10px;
-    margin-right: 30px;
     color: #c8cfd7;
     cursor: pointer;
 }
-header.body article.general-stats > span {
+header.body article.stats > span {
     margin-right: 10px;
     font-weight: bold;
+}
+header.body article.stats.general {
+    line-height: 25px;
+    margin-right: 30px;
+    padding: 10px;
+}
+header.body article.stats.t411 {
+    line-height: 70px;
+    padding: 0;
+    width: 250px;
+}
+header.body article.stats.t411 img {
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+}
+header.body article.stats.t411 .avatar {
+    float: left;
+    margin-right: 10px;
+}
+header.body article.stats.t411 .stats_container {
+    line-height: 25px;
+    padding: 10px
 }
 header.body button {
     line-height: 68px;
@@ -149,7 +169,12 @@ header.body h2 {
     }
 }
 @media screen and (max-width:900px) {
-    header.body article.general-stats {
+    header.body article.stats {
+        display: none;
+    }
+}
+@media screen and (max-width:1100px) {
+    header.body article.stats.t411 {
         display: none;
     }
 }

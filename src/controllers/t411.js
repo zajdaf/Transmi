@@ -48,7 +48,8 @@ let torrentRouter = () => {
 	/*
 	 * Update user profile from t411 and stores result in db
 	 */
-	router.get("/profile/refresh", (req, res, next) => {
+
+	function profileRefresh(req, res, next) {
 		let user = db.get(req.user, {})
 		let token = (user.t411 || {}).token || null
 		let uid = (user.t411 || {}).uid || null
@@ -77,7 +78,8 @@ let torrentRouter = () => {
 			db.set(req.user, user)
 			res.json(user.t411.profile)
 		})
-	})
+	}
+	router.get("/profile/refresh", profileRefresh)
 
 	/*
 	 * Returns last user profile stored in db
@@ -92,7 +94,7 @@ let torrentRouter = () => {
 			return next(new Error('T411 user not authenticated'))
 		}
 		if (!profile) {
-			return next(new Error('T411 user without profile'))  // Allow to refresh the profile for current users which have a token + uid but no profile
+			return profileRefresh(req, res, next)
 		} else {
 			res.json(profile)
 		}

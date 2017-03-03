@@ -74,12 +74,9 @@
                 }.bind(this))
             },
             updateT411Profile: function () {
-                window.app.api.get('/t411/profile/refresh').then(function (response) {
+                return window.app.api.get('/t411/profile/refresh').then(function (response) {
                     this.set({ t411_profile: response.data, errorT411: null })
                     console.log("success", response)
-                }.bind(this)).catch(function (error) {
-                    this.set({ t411_profile: null, errorT411: null })
-                    console.log(error)
                 }.bind(this))
             },
             getT411Profile: function () {
@@ -96,7 +93,7 @@
                 }).then(function (response) {
                     return this.updateT411Profile()
                 }.bind(this)).catch(function (error) {
-                    this.set({ errorT411: error })
+                    this.set({ t411_profile: null, errorT411: error })
                 }.bind(this))
             },
             t411Logout: function () {
@@ -104,7 +101,7 @@
                 }).then(function (response) {
                     return this.updateT411Profile()
                 }.bind(this)).catch(function (error) {
-                    this.set({ errorT411: error })
+                    this.set({ t411_profile: null, errorT411: error })
                 }.bind(this))
             }
         }

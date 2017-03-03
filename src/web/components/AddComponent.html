@@ -30,7 +30,7 @@
                 <div class="loader"></div>
             {{/if}}
         </button>
-        <table>
+        <table id="t411-search-table">
             <thead>
                 <tr><th>Category</th><th>Name</th><th>Date</th><th>Size</th><th>Seeders</th><th>Leechers</th><th>Download</th></tr>
             </thead>
@@ -39,8 +39,8 @@
                     <tr>
                         <td>{{torrent.categoryname}}</td>
                         <td><a href="https://www.t411.li/t/{{torrent.id}}">{{torrent.name}}</a></td>
-                        <td>{{timeSinceDate(Date.parse(torrent.added))}}</td>
-                        <td>{{formatSize(torrent.size)}}</td>
+                        <td data-sort='{{torrent.hoursSinceNow}}'>{{formattedTimeSinceDate(torrent.added)}}</td>
+                        <td data-sort='{{torrent.size}}'>{{formatSize(torrent.size)}}</td>
                         <td>{{torrent.seeders}}</td>
                         <td>{{torrent.leechers}}</td>
                         <td><button class="mini" on:click="downloadT411(torrent.id)">Download</button></td>
@@ -54,6 +54,7 @@
 <script>
     export default {
         onrender () {
+            new Tablesort(document.getElementById('t411-search-table'))
         },
         data () {
             return {
@@ -68,8 +69,8 @@
         },
         helpers: {
             formatSize: window.GenericHelpers.formatSize,
-            timeSinceDate: function(date) {
-                var seconds = Math.floor((new Date() - date) / 1000);
+            formattedTimeSinceDate: function(date) {
+                var seconds = Math.floor((new Date() - Date.parse(date)) / 1000);
                 var interval = Math.floor(seconds / 31536000);
                 if (interval > 1) {
                     return interval + " years";
@@ -154,6 +155,9 @@
                 window.app.api.post('/t411/search', {
                     search: this.get('queryT411')
                 }).then(function (response) {
+                    for (var i = 0; i < response.data.length; i++) {
+                        response.data[i].hoursSinceNow = Math.abs(Date.parse(response.data[i].added) - new Date()) / 3.6e6;
+                    }
                     this.set({ searchingTorrent: false })
                     this.set({ t411Results: response.data })
                 }.bind(this)).catch(function (error) {

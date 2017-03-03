@@ -27,7 +27,8 @@ let torrentRouter = () => {
 			let user = db.get(req.user, {})
 			user.t411 = {
 				token: json.token,
-				uid: json.uid
+				uid: json.uid,
+				profile: {}
 			}
 			db.set(req.user, user)
 			res.json({})
@@ -51,11 +52,8 @@ let torrentRouter = () => {
 		let user = db.get(req.user, {})
 		let token = (user.t411 || {}).token || null
 		let uid = (user.t411 || {}).uid || null
-		if (!token) {
-			next(new Error('T411 token not found'))
-		}
-		if (!uid) {
-			next(new Error('T411 user not found'))
+		if (!token || !uid) {
+			next(new Error('T411 user not authenticated'))
 		}
 		request({
 			url: baseUrl + '/users/profile/' + uid,
@@ -85,9 +83,16 @@ let torrentRouter = () => {
 	 * Returns last user profile stored in db
 	 */
 	router.get("/profile", (req, res, next) => {
-		let profile = (db.get(req.user, {}).t411 || {}).profile || null
+		let user = db.get(req.user, {})
+		let token = (user.t411 || {}).token || null
+		let uid = (user.t411 || {}).uid || null
+		let profile = (user.t411 || {}).profile || null
+
+		if (!token || !uid) {
+			return next(new Error('T411 user not authenticated'))
+		}
 		if (!profile) {
-			next(new Error('T411 profile not found'))
+			return next(new Error('T411 user without profile'))  // Allow to refresh the profile for current users which have a token + uid but no profile
 		} else {
 			res.json(profile)
 		}

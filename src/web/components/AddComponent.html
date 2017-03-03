@@ -24,16 +24,22 @@
         {{/if}}
         <h2>From T411</h2>
         <input type="text" placeholder="Search a torrent" bind:value="queryT411" on:keyEnter="searchT411()">
-        <button on:click="searchT411()">Search</button>
+        <button on:click="searchT411()">
+            Search
+            {{#if searchingTorrent}}
+                <div class="loader"></div>
+            {{/if}}
+        </button>
         <table>
             <thead>
-                <tr><th>Category</th><th>Name</th><th>Size</th><th>Seeders</th><th>Leechers</th><th>Download</th></tr>
+                <tr><th>Category</th><th>Name</th><th>Date</th><th>Size</th><th>Seeders</th><th>Leechers</th><th>Download</th></tr>
             </thead>
             <tbody>
                 {{#each t411Results as torrent}}
                     <tr>
                         <td>{{torrent.categoryname}}</td>
                         <td><a href="https://www.t411.li/t/{{torrent.id}}">{{torrent.name}}</a></td>
+                        <td>{{timeSinceDate(Date.parse(torrent.added))}}</td>
                         <td>{{formatSize(torrent.size)}}</td>
                         <td>{{torrent.seeders}}</td>
                         <td>{{torrent.leechers}}</td>
@@ -56,11 +62,36 @@
                 url: "",
                 errorT411: null,
                 queryT411: "",
-                t411Results: []
+                t411Results: [],
+                searchingTorrent: false,
             }
         },
         helpers: {
-            formatSize: window.GenericHelpers.formatSize
+            formatSize: window.GenericHelpers.formatSize,
+            timeSinceDate: function(date) {
+                var seconds = Math.floor((new Date() - date) / 1000);
+                var interval = Math.floor(seconds / 31536000);
+                if (interval > 1) {
+                    return interval + " years";
+                }
+                interval = Math.floor(seconds / 2592000);
+                if (interval > 1) {
+                    return interval + " months";
+                }
+                interval = Math.floor(seconds / 86400);
+                if (interval > 1) {
+                    return interval + " days";
+                }
+                interval = Math.floor(seconds / 3600);
+                if (interval > 1) {
+                    return interval + " hours";
+                }
+                interval = Math.floor(seconds / 60);
+                if (interval > 1) {
+                    return interval + " minutes";
+                }
+                return Math.floor(seconds) + " seconds";
+            }
         },
         components: {
             HeaderComponent
@@ -119,12 +150,16 @@
                 }
             },
             searchT411: function () {
+                this.set({ searchingTorrent: true })
                 window.app.api.post('/t411/search', {
                     search: this.get('queryT411')
                 }).then(function (response) {
+                    this.set({ searchingTorrent: false })
                     this.set({ t411Results: response.data })
                 }.bind(this)).catch(function (error) {
+                    this.set({ searchingTorrent: false })
                     this.set({ errorT411: error })
+                    console.log(error)
                 }.bind(this))
             },
             downloadT411: function (torrentId) {

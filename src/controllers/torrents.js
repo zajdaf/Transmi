@@ -259,7 +259,7 @@ let torrentRouter = () => {
 		let directory = config.downloads_directory + user.customData[+req.params.id].downloadPath
 		let zipFile = 'archives/' + user.customData[+req.params.id].downloadPath.replace('/', '-') + '.zip'
 		let target = config.downloads_directory + zipFile
-		const child = exec(`cd ${directory} && zip -r ${target} .`, (error, stdout, stderr) => {
+		const child = exec(`cd ${directory} && zip -0 -r ${target} .`, (error, stdout, stderr) => {
 			user.customData[+req.params.id].zipProcessing = false
 			user.customData[+req.params.id].zipFile = zipFile
 			db.set(req.user, user)

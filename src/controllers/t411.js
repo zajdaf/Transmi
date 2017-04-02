@@ -6,7 +6,7 @@ const db = require('./db')
 
 let torrentRouter = () => {
 	let router = express.Router()
-	let baseUrl = 'https://api.t411.li'
+	let baseUrl = 'https://api.t411.ai'
 
 	router.post("/auth", (req, res, next) => {
 		request({

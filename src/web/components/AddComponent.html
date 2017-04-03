@@ -19,31 +19,61 @@
     </article>
 
     <article class="box">
-        {{#if errorT411}}
-            <div class="warn"><i class="icon">&#9888;</i> {{errorT411}}</div>
+        {{#if errorTrackers}}
+            <div class="warn"><i class="icon">&#9888;</i> {{errorTrackers}}</div>
         {{/if}}
-        <h2>From T411</h2>
-        <input type="text" placeholder="Search a torrent" bind:value="queryT411" on:keyEnter="searchT411()">
+        <h2>From trackers</h2>
+        <input type="text" placeholder="Search a torrent" bind:value="queryTrackers" on:keyEnter="searchT411()">
         <button on:click="searchT411()">
-            Search
+            Search from T411
             {{#if searchingTorrent}}
                 <div class="loader"></div>
             {{/if}}
         </button>
-        <table id="t411-search-table">
+        <button on:click="searchRarbG()">
+            Search from rarbg.to
+            {{#if searchingTorrent}}
+                <div class="loader"></div>
+            {{/if}}
+        </button>
+        <button on:click="searchOpenSubtitles()">
+            Search from OpenSubtitles
+            {{#if searchingTorrent}}
+                <div class="loader"></div>
+            {{/if}}
+        </button>
+        <table id="trackers-table">
             <thead>
                 <tr><th>Category</th><th>Name</th><th>Date</th><th>Size</th><th>Seeders</th><th>Leechers</th><th>Download</th></tr>
             </thead>
             <tbody>
-                {{#each t411Results as torrent}}
+                {{#each trackersResults as torrent}}
                     <tr>
-                        <td>{{torrent.categoryname}}</td>
-                        <td><a href="https://www.t411.li/t/{{torrent.id}}">{{torrent.name}}</a></td>
-                        <td data-sort='{{torrent.hoursSinceNow}}'>{{formattedTimeSinceDate(torrent.added)}}</td>
-                        <td data-sort='{{torrent.size}}'>{{formatSize(torrent.size)}}</td>
+                        <td>{{torrent.category}}</td>
+                        <td><a href="{{torrent.link}}" target="_blank">{{torrent.name}}</a></td>
+                        <td data-sort='{{torrent.hoursSinceNow}}'>
+                            {{#if torrent.date}}
+                                {{formattedTimeSinceDate(torrent.date)}}
+                            {{else}}
+                                -
+                            {{/if}}
+                        </td>
+                        <td data-sort='{{torrent.size}}'>
+                            {{#if torrent.size}}
+                                {{formatSize(torrent.size)}}
+                            {{else}}
+                                -
+                            {{/if}}
+                        </td>
                         <td>{{torrent.seeders}}</td>
                         <td>{{torrent.leechers}}</td>
-                        <td><button class="mini" on:click="downloadT411(torrent.id)">Download</button></td>
+                        <td>
+                            {{#if torrent.download}}
+                                <button class="mini" on:click="downloadFromTracker(torrent.download)">Download</button>
+                            {{else}}
+                                <a class="button mini" href="{{torrent.link}}" target="_blank">Download</button>
+                            {{/if}}
+                        </td>
                     </tr>
                 {{/each}}
             </tbody>
@@ -54,16 +84,16 @@
 <script>
     export default {
         onrender () {
-            new Tablesort(document.getElementById('t411-search-table'))
+            new Tablesort(document.getElementById('trackers-table'))
         },
         data () {
             return {
                 errorFile: null,
                 errorUrl: null,
                 url: "",
-                errorT411: null,
-                queryT411: "",
-                t411Results: [],
+                errorTrackers: null,
+                queryTrackers: "",
+                trackersResults: [],
                 searchingTorrent: false,
             }
         },
@@ -153,16 +183,25 @@
             searchT411: function () {
                 this.set({ searchingTorrent: true })
                 window.app.api.post('/t411/search', {
-                    search: this.get('queryT411')
+                    search: this.get('queryTrackers')
                 }).then(function (response) {
+                    var torrents = []
                     for (var i = 0; i < response.data.length; i++) {
-                        response.data[i].hoursSinceNow = Math.abs(Date.parse(response.data[i].added) - new Date()) / 3.6e6;
+                        torrents.push({
+                            category: response.data[i].categoryname,
+                            link: 'https://www.t411.ai/t/' + response.data[i].id,
+                            name: response.data[i].name,
+                            date: response.data[i].added,
+                            hoursSinceNow: Math.abs(Date.parse(response.data[i].added) - new Date()) / 3.6e6,
+                            size: response.data[i].size,
+                            seeders: response.data[i].seeders,
+                            leechers: response.data[i].leechers,
+                            download: this.downloadT411.bind(this, response.data[i].id)
+                        })
                     }
-                    this.set({ searchingTorrent: false })
-                    this.set({ t411Results: response.data })
+                    this.set({ searchingTorrent: false, trackersResults: torrents })
                 }.bind(this)).catch(function (error) {
-                    this.set({ searchingTorrent: false })
-                    this.set({ errorT411: error })
+                    this.set({ searchingTorrent: false, errorTrackers: error })
                     console.log(error)
                 }.bind(this))
             },
@@ -172,8 +211,64 @@
                 }).then(function (response) {
                     window.app.router.go('torrents')
                 }.bind(this)).catch(function (error) {
-                    this.set({ errorT411: error })
+                    this.set({ errorTrackers: error })
                 }.bind(this))
+            },
+            searchRarbG: function () {
+                this.set({ searchingTorrent: true })
+                window.app.api.post('/rarbg/search', {
+                    search: this.get('queryTrackers')
+                }).then(function (response) {
+                    var torrents = []
+                    for (var i = 0; i < response.data.length; i++) {
+                        torrents.push({
+                            category: response.data[i].category,
+                            link: response.data[i].info_page,
+                            name: response.data[i].title,
+                            date: response.data[i].pubdate,
+                            hoursSinceNow: Math.abs(Date.parse(response.data[i].pubdate) - new Date()) / 3.6e6,
+                            size: response.data[i].size,
+                            seeders: response.data[i].seeders,
+                            leechers: response.data[i].leechers,
+                            download: this.downloadRarbg.bind(this, response.data[i].download)
+                        })
+                    }
+                    this.set({ searchingTorrent: false, trackersResults: torrents })
+                }.bind(this)).catch(function (error) {
+                    this.set({ searchingTorrent: false, errorTrackers: error })
+                    console.log(error)
+                }.bind(this))
+            },
+            downloadRarbg: function (magnet) {
+                this.set({ url: magnet })
+                this.addUrl()
+            },
+            searchOpenSubtitles: function () {
+                this.set({ searchingTorrent: true })
+                window.app.api.post('/opensubtitles/search', {
+                    search: this.get('queryTrackers')
+                }).then(function (response) {
+                    var torrents = []
+                    for (var i = 0; i < response.data.length; i++) {
+                        torrents.push({
+                            category: response.data[i].lang,
+                            link: response.data[i].url,
+                            name: response.data[i].filename,
+                            date: '-',
+                            hoursSinceNow: 0,
+                            size: 0,
+                            seeders: +response.data[i].score,
+                            leechers: +response.data[i].downloads
+                        })
+                    }
+                    this.set({ searchingTorrent: false, trackersResults: torrents })
+                }.bind(this)).catch(function (error) {
+                    this.set({ searchingTorrent: false, errorTrackers: error })
+                    console.log(error)
+                }.bind(this))
+            },
+            downloadFromTracker: function (callbackDownload) {
+                callbackDownload()
             }
         }
     }

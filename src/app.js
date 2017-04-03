@@ -6,6 +6,8 @@ const authRoutes = require('./controllers/auth')
 const userRoutes = require('./controllers/user')
 const torrentsRoutes = require('./controllers/torrents')
 const t411Routes = require('./controllers/t411')
+const rarbgRoutes = require('./controllers/rarbg')
+const opensubtitlesRoutes = require('./controllers/opensubtitles')
 
 let app = express()
 
@@ -32,6 +34,8 @@ app.use("/api/user", userRoutes())
 
 app.use("/api/torrents", torrentsRoutes())
 app.use("/api/t411", t411Routes())
+app.use("/api/rarbg", rarbgRoutes())
+app.use("/api/opensubtitles", opensubtitlesRoutes())
 
 app.use(express.static('src/web/public'))
 

@@ -101,7 +101,7 @@ let torrentRouter = () => {
 		transmission.get((err, arg) => {
 			if (!hasError(next, err)) {
 				let stats = {
-					all: { download: 0, upload: 0, size: 0, number: 0 },
+					all: { download: 0, upload: 0, size: 0, number: 0, usage: '-%' },
 					users: []
 				}
 
@@ -138,7 +138,14 @@ let torrentRouter = () => {
 					user.torrents.push({ id: +t.id, name: t.name, size: t.sizeWhenDone, download: t.rateDownload, upload: t.rateUpload })
 				}
 
-				res.json(stats)
+				const child = exec("df -h | grep home | awk '{print $5}' | tr -d '\n'", (error, stdout, stderr) => {
+					if (stdout) {
+						stats.all.usage = stdout
+					} else {
+						console.error(error, stderr)
+					}
+					res.json(stats)
+				})
 			}
 		})
 	})

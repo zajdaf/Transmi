@@ -22,6 +22,9 @@ let torrentRouter = () => {
                     tokenPromise = null
                 }, 1000 * 60 * 10)
                 return os
+            }).catch(err => {
+                tokenPromise = null
+                return Promise.reject(err)
             })
         }
         return tokenPromise

@@ -22,7 +22,7 @@
                 <button disabled>Archive zip processing...</button>
             {{else}}
                 {{#if torrent.customData && torrent.customData.zipFile}}
-                    <a class="button" href="/download/{{torrent.customData.zipFile}}">Download archive</button>
+                    <a class="button" href="/download/{{torrent.customData.zipFile}}">Download archive</a>
                 {{else}}
                     <button on:click="zipTorrent()">Make an archive</button>
                 {{/if}}

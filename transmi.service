@@ -1,0 +1,14 @@
+[Unit]
+Description=Transmi
+
+[Service]
+ExecStart=/usr/bin/node /home/seedbox/Transmi/src/app.js
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+Environment=NODE_ENV=production
+WorkingDirectory=/home/seedbox/Transmi
+
+[Install]
+WantedBy=multi-user.target

@@ -14,7 +14,7 @@
                     Ratio {{torrent.uploadRatio}} -
                     {{#if torrent.eta >= 0 }}{{formatDuration(torrent.eta)}} remaining -{{/if}}
                     <i class="icon">&#8681;</i> {{formatSize(torrent.rateDownload)}}/s, <i class="icon">&#8679;</i> {{formatSize(torrent.rateUpload)}}/s</div>
-                <div class="progress"><span style="width: {{torrent.percentDone*100}}%">{{torrent.percentDone*100}}%</span></div>
+                <div class="progress"><span style="width: {{torrent.percentDone*100}}%">{{Math.round(torrent.percentDone*10000)/100}}%</span></div>
                 {{#if torrent.errorString }}<div class="warn"><i class="icon">&#9888;</i> {{torrent.errorString}}</div>{{/if}}
                 {{#if torrent.errorServer }}<div class="warn"><i class="icon">&#9888;</i> {{torrent.errorServer}}</div>{{/if}}
             </article>

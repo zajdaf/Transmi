@@ -4,6 +4,15 @@ A web interface to manage torrents. Can be used by multiple users. To each user 
 
 Uses [node-transmission](https://github.com/FLYBYME/node-transmission) and [svelte](https://svelte.technology/).
 
+## Lazy install
+
+Should work on Ubuntu/Debian and equivalents
+```bash
+git clone git@github.com:zajdaf/Transmi.git
+cd Transmi
+chmod +x ./install.sh && ./install.sh
+```
+
 ## Requirements/installation
 
 - Node 7.x + npm

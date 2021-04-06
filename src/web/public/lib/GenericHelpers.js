@@ -22,17 +22,17 @@ var GenericHelpers = (function () { 'use strict';
         },
         formatSize: function (size) {
             var unit = 'GB'
-            var modifier = 1000000000
+            var modifier = 1024 * 1024 * 1024
 
-            if (size < 1000) {
+            if (size < 1024) {
                 unit = 'B'
                 modifier = 1
-            } else if (size < 1000000) {
+            } else if (size < 1024 * 1024) {
                 unit = 'kB'
-                modifier = 1000
-            } else if (size < 1000000000) {
+                modifier = 1024
+            } else if (size < 1024 * 1024 * 1024) {
                 unit = 'MB'
-                modifier = 1000000
+                modifier = 1024 * 1024
             }
 
             return parseInt(size / modifier * 100) / 100 + ' ' + unit
